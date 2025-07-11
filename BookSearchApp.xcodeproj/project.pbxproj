@@ -10,6 +10,7 @@
 		91AACF2B2E1FB88100861DB5 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2A2E1FB88100861DB5 /* RxBlocking */; };
 		91AACF2D2E1FB88100861DB5 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2C2E1FB88100861DB5 /* RxCocoa */; };
 		91AACF2F2E1FB88100861DB5 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2E2E1FB88100861DB5 /* RxRelay */; };
+		91AACF5C2E212C3400861DB5 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,7 @@
 		91AACEE52E1F546C00861DB5 /* BookSearchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookSearchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91AACEF72E1F546E00861DB5 /* BookSearchAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookSearchAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		91AACF012E1F546E00861DB5 /* BookSearchAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookSearchAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -97,6 +99,7 @@
 		91AACEDC2E1F546C00861DB5 = {
 			isa = PBXGroup;
 			children = (
+				91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */,
 				91AACEE72E1F546C00861DB5 /* BookSearchApp */,
 				91AACEFA2E1F546E00861DB5 /* BookSearchAppTests */,
 				91AACF042E1F546E00861DB5 /* BookSearchAppUITests */,
@@ -240,6 +243,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91AACF5C2E212C3400861DB5 /* Secrets.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +303,7 @@
 /* Begin XCBuildConfiguration section */
 		91AACF092E1F546E00861DB5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -351,6 +356,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				KAKAO_API_KEY = "${KAKAO_API_KEY}";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -363,6 +369,7 @@
 		};
 		91AACF0A2E1F546E00861DB5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -409,6 +416,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				KAKAO_API_KEY = "${KAKAO_API_KEY}";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

@@ -1,107 +1,109 @@
-# BookSearchApp - SwiftUI 프로젝트
+# BookSearchApp
 
-이 프로젝트는 SwiftUI를 사용하여 책 검색 애플리케이션의 핵심 UI 컴포넌트 중 하나인 `BookItemView`를 구현합니다. `BookItemView`는 책 목록에서 각 책의 정보를 시각적으로 표현하는 역할을 합니다.
+iOS 도서 검색 및 즐겨찾기 관리 애플리케이션
 
-## 빌드 방법
+## 📖 프로젝트 소개
 
-이 프로젝트는 Xcode를 사용하여 빌드 및 실행할 수 있습니다.
+이 프로젝트는 카카오 도서 검색 API를 활용하여 도서를 검색하고, 검색된 도서를 즐겨찾기에 추가하여 로컬에서 관리할 수 있는 iOS 애플리케이션입니다. SwiftUI를 기반으로 MVVM 아키텍처 패턴을 적용하여 개발되었습니다.
 
-1.  **Xcode 설치:** macOS에 최신 버전의 Xcode가 설치되어 있는지 확인합니다.
-2.  **프로젝트 열기:** `BookSearchApp.xcodeproj` 파일을 Xcode로 엽니다.
-3.  **의존성 확인:** 프로젝트에 필요한 Swift Package Manager (SPM) 의존성이나 CocoaPods/Carthage 의존성이 있다면 자동으로 해결되거나, 필요한 경우 수동으로 설치합니다.
-    *   현재 `AsyncImage`는 SwiftUI 15+에서 기본 제공되므로, 별도의 외부 라이브러리 의존성은 명시적으로 추가되지 않았습니다.
-4.  **빌드 및 실행:** Xcode 상단의 스키마 선택기에서 대상(예: `BookSearchApp`)을 선택하고, 시뮬레이터 또는 실제 기기를 선택한 후 빌드 및 실행 버튼(▶️)을 클릭합니다.
+## ✨ 주요 기능
 
-## 사용 프레임워크
+*   **도서 검색**: 카카오 도서 검색 API를 통해 다양한 도서를 검색합니다.
+    *   검색어 기반 질의
+    *   정확도순 / 발간일순 정렬 (API 파라미터 활용)
+    *   페이징 처리 (20개 단위)
+*   **즐겨찾기 관리**:
+    *   검색 결과에서 도서를 즐겨찾기에 추가/삭제합니다.
+    *   즐겨찾기된 도서는 로컬에 저장됩니다. (현재는 메모리 기반 `FavoriteManager`)
+    *   즐겨찾기 목록 내에서 검색, 제목 오름차순/내림차순 정렬, 금액 필터링이 가능합니다.
+*   **도서 상세 정보**: 도서 이미지를 포함한 상세 정보를 확인합니다.
+*   **재사용 가능한 UI**: `BooksListView`를 검색 탭과 즐겨찾기 탭에서 재사용하여 효율적인 코드 관리를 지향합니다.
+*   **상태 기반 UI**: 네트워크 통신 상태(로딩, 성공, 에러, 결과 없음)에 따라 적절한 UI를 사용자에게 제공합니다.
 
-*   **SwiftUI:** 사용자 인터페이스를 선언적으로 구축하기 위한 Apple의 UI 프레임워크.
-*   **Foundation:** 기본 데이터 타입, 컬렉션, 날짜 및 시간 관리, URL 처리 등 핵심 기능을 제공하는 프레임워크.
-*   **AsyncImage (SwiftUI 15+):** URL에서 이미지를 비동기적으로 로드하고 표시하는 데 사용됩니다.
+## 🛠️ 기술 스택 및 프레임워크
 
-## 프로젝트 구조
+*   **언어**: Swift 5
+*   **프레임워크**: SwiftUI
+*   **아키텍처**: MVVM (Model-View-ViewModel)
+*   **의존성 관리**: DI (Dependency Injection) Container 패턴
+*   **비동기 처리**: RxSwift (API 통신 및 데이터 스트림 관리)
+*   **네트워크**: URLSession
+*   **데이터 파싱**: Codable, JSONDecoder (snake_case 및 ISO8601 날짜 처리)
+*   **커스텀 폰트**: Jalnan2 (ViewModifier를 통한 적용)
 
-현재 프로젝트는 `BookItemView` 컴포넌트를 중심으로 구성되어 있으며, 클린 아키텍처 원칙에 따라 프레젠테이션 계층의 분리를 지향합니다.
+## 📂 프로젝트 구조
 
 ```
-/Users/chasangjin/Documents/dev/swiftui_Project/BookSearchApp/
-├───BookSearchApp/
-│   ├───BookSearchAppApp.swift
-│   ├───ContentView.swift
-│   ├───Persistence.swift
-│   ├───Presentation/
-│   │   ├───FavoriteBooksView.swift
-│   │   ├───TotalListView.swift
-│   │   └───Components/
-│   │       └───BookItemView.swift  <-- 이 파일에 대한 작업이 진행됨
-│   └───Resources/
-│       └───...
-├───BookSearchApp.xcodeproj/
-│   └───...
-├───BookSearchAppTests/
-│   └───...
-└───BookSearchAppUITests/
-    └───...
+BookSearchApp/
+├── BookSearchApp/
+│   ├── BookSearchApp.swift           # 앱 진입점 및 초기 설정
+│   ├── Data/                         # 데이터 계층
+│   │   ├── Network/                  # 네트워크 통신 관련
+│   │   │   ├── APIService.swift      # 카카오 API 호출 및 응답 처리
+│   │   │   └── NetworkError.swift    # 네트워크 에러 정의
+│   │   └── Repository/               # 데이터 저장소 (Repository 패턴)
+│   │       └── BookRepository.swift  # 데이터 소스 추상화 (API/Mock)
+│   ├── DI/                           # 의존성 주입 컨테이너
+│   │   └── DIContainer.swift         # 의존성 객체 생성 및 주입 관리
+│   ├── Domain/                       # 도메인 계층 (핵심 비즈니스 로직)
+│   │   ├── Entity/                   # 데이터 모델 정의
+│   │   │   └── BookItemModel.swift   # 도서 아이템 모델 (Codable, Identifiable)
+│   │   └── UseCase/                  # 비즈니스 로직 실행 단위
+│   │       └── (APISearchUseCase, LocalFavoritesUseCase 등)
+│   ├── Extension/                    # 확장 기능
+│   │   ├── Color+Extension.swift     # 커스텀 색상 정의
+│   │   └── Font+Extension.swift      # 커스텀 폰트 ViewModifier 정의
+│   ├── Presentation/                 # UI 계층
+│   │   ├── ViewModel/                # 뷰 모델
+│   │   │   └── BooksListViewModel.swift # 뷰 상태 및 비즈니스 로직 처리
+│   │   └── Views/                    # SwiftUI 뷰
+│   │       ├── Components/           # 재사용 가능한 UI 컴포넌트
+│   │       │   ├── BookItemView.swift # 도서 아이템 카드 뷰
+│   │       │   └── SortOptionsSectionView.swift # 정렬 옵션 섹션 뷰
+│   │       └── BooksListView.swift   # 도서 목록 표시 (검색/즐겨찾기 탭 재사용)
+│   └── Resources/                    # 앱 리소스
+│       └── (Assets, Fonts 등)
+├── BookSearchApp.xcodeproj/          # Xcode 프로젝트 파일
+├── BookSearchAppTests/               # 유닛 테스트
+└── BookSearchAppUITests/             # UI 테스트
 ```
 
-*   **`BookItemView.swift`:** 이 파일은 `BookItemView`와 `BookItemViewModel`을 포함합니다. `BookItemModel`은 이 파일 외부에 정의되어 있다고 가정합니다.
-*   **`Presentation/Components/`:** 재사용 가능한 UI 컴포넌트들이 위치하는 디렉토리.
+## 💡 주요 구현 포인트
 
-## 주요 구현 포인트
+*   **MVVM 아키텍처**: View, ViewModel, Model의 역할을 명확히 분리하여 코드의 응집도를 높이고 유지보수를 용이하게 합니다.
+*   **의존성 주입 (DI)**: `DIContainer`를 통해 객체 간의 의존성을 외부에서 주입하여 결합도를 낮추고 테스트 용이성을 확보합니다. Mock 데이터 소스와 실제 API 데이터 소스를 쉽게 전환할 수 있도록 구현되었습니다.
+*   **UseCase 패턴**: 비즈니스 로직을 UseCase 단위로 캡슐화하여 ViewModel이 특정 데이터 소스에 의존하지 않도록 추상화했습니다. `APISearchUseCase`와 `LocalFavoritesUseCase`를 통해 검색 탭과 즐겨찾기 탭에서 `BooksListView`를 재사용할 수 있습니다.
+*   **상태 기반 UI (`ViewState`)**: `BooksListViewModel`에서 `ViewState` 열거형을 통해 현재 뷰의 상태(로딩, 성공, 에러, 빈 결과 등)를 관리하고, `BooksListView`는 이 상태에 따라 적절한 UI를 동적으로 렌더링합니다.
+*   **`Codable` 및 `JSONDecoder` 전략**: 카카오 API의 `snake_case` 키와 ISO8601 형식의 `datetime` 문자열을 Swift의 `camelCase` 프로퍼티와 `Date` 타입으로 자동으로 디코딩할 수 있도록 `JSONDecoder`의 `keyDecodingStrategy`와 `dateDecodingStrategy`를 커스터마이징했습니다.
+*   **`ViewModifier`를 통한 폰트 관리**: 커스텀 폰트(`Jalnan2`)를 `ViewModifier`로 구현하여 뷰 전반에 걸쳐 일관된 폰트 스타일을 쉽게 적용하고 재사용할 수 있습니다.
 
-`BookItemView.swift` 파일은 단일 책 항목의 상세 정보를 표시하는 뷰를 정의하며, 다음과 같은 주요 구현 특징을 가집니다.
+## 🚀 빌드 및 실행 방법
 
-### 아키텍처 결정
+1.  **프로젝트 압축 해제**:
+    *   제출된 압축 파일(`BookSearchApp.zip` 등)을 원하는 위치에 압축 해제합니다.
 
-`BookItemView`는 클린 아키텍처 원칙을 따르며, 특히 프레젠테이션 계층의 관심사 분리에 중점을 둡니다.
+2.  **카카오 REST API 키 설정**:
+    *   [카카오 개발자 웹사이트](https://developers.kakao.com/)에서 애플리케이션을 생성하고 **REST API 키**를 발급받습니다.
+    *   프로젝트 루트 디렉토리(`BookSearchApp/`)에 있는 `Secrets.xcconfig` 파일을 엽니다.
+    *   `KAKAO_API_KEY = YOUR_KAKAO_API_KEY` 라인에서 `YOUR_KAKAO_API_KEY` 부분을 발급받은 REST API 키로 교체합니다.
+        ```
+        KAKAO_API_KEY = [발급받은_REST_API_키]
+        ```
+    *   **참고**: 이 파일은 프로젝트에 포함되어 있으므로, 별도의 Xcode 설정 없이 바로 빌드 및 실행이 가능합니다.
+3.  **Xcode에서 빌드 및 실행**:
+    *   압축 해제된 프로젝트 폴더 내 `BookSearchApp.xcodeproj` 파일을 Xcode로 엽니다.
+    *   대상 기기(시뮬레이터 또는 실제 기기)를 선택하고 프로젝트를 빌드 및 실행합니다.
 
-*   **`BookItemModel` (도메인 계층):** 이 파일에는 `BookItemModel`의 정의가 포함되어 있지 않습니다. `BookItemModel`은 UI에 종속되지 않는 순수한 데이터 구조로, 프로젝트의 다른 도메인 계층 파일에 정의되어 있다고 가정합니다.
-*   **`BookItemViewModel` (프레젠테이션 계층):** `BookItemView.swift` 파일 내에 정의되어 있습니다. `BookItemViewModel`은 `BookItemModel`을 주입받아 뷰가 화면에 표시하기 쉬운 형태로 데이터를 가공하는 역할을 합니다. 모든 표시 로직(문자열 포맷팅, 할인율 계산 등)은 뷰 모델에서 처리됩니다.
-*   **`BookItemView` (프레젠테이션 계층):** `BookItemViewModel`에서 가공된 데이터를 받아서 단순히 화면에 표시하는 역할만 합니다. 뷰는 데이터 변환이나 복잡한 로직을 포함하지 않아 간결하고 테스트하기 용이합니다.
+## 📝 과제 요구사항 (참고)
 
-### `EnvironmentObject` 및 `Binding` 미사용 이유
+이 프로젝트는 다음 과제 요구사항을 기반으로 구현되었습니다.
 
-`BookItemView`는 리스트의 개별 항목을 표시하는 뷰로서, 다음과 같은 이유로 `EnvironmentObject`나 `Binding`을 사용하지 않습니다:
+*   **iOS 최소 버전**: 16.0
+*   **Xcode 버전**: 16.2
+*   **API**: Kakao Developers - 도서 검색 API
+*   **화면 구성**: 하단 탭바 (전체 리스트, 즐겨찾기 리스트)
+*   **검색 리스트 화면**: 도서 정보 카드, 검색, 정렬(정확도/발간일), 페이징, 즐겨찾기 토글, 상세 화면 이동
+*   **즐겨찾기 리스트 화면**: 로컬 데이터 기반, 검색, 정렬/필터(제목 오름차순/내림차순, 금액 필터링), 즐겨찾기 토글, 상세 화면 이동
+*   **도서 상세 화면**: 도서 이미지, 제목, 정보 표시, 즐겨찾기 토글
 
-*   **`EnvironmentObject`:** 앱 전체에 걸쳐 공유되는 전역적인 상태를 전달할 때 사용됩니다. `BookItemView`는 특정 책 항목에 대한 독립적인 정보를 표시하므로, `EnvironmentObject`를 사용하는 것은 불필요한 의존성을 만들고 재사용성을 저해할 수 있습니다.
-*   **`Binding`:** 상위 뷰의 상태를 하위 뷰에서 양방향으로 수정할 때 사용됩니다. `BookItemView`는 데이터를 표시하는 역할에만 집중하며, 자신의 데이터를 직접 수정할 필요가 없습니다. 데이터 변경 로직은 뷰 모델이나 더 상위 계층에서 처리하는 것이 클린 아키텍처에 부합합니다.
-
-이러한 아키텍처 선택은 `BookItemView`의 재사용성, 테스트 용이성 및 데이터 흐름의 명확성을 높이는 데 기여합니다.
-
-### 구현된 기능 상세
-
-*   **책 표지 이미지:** `AsyncImage`를 사용하여 비동기적으로 책 표지 이미지를 로드하고, 로딩 중 또는 에러 발생 시 적절한 플레이스홀더를 표시합니다. 이미지의 너비는 100pt로 고정되어 있으며, 높이는 부모 뷰에 맞춰 확장됩니다.
-*   **책 내용:**
-    *   "도서" 카테고리 텍스트 (회색, 작은 글씨)
-    *   **책 제목:** 굵은 글씨로 강조되며, 최대 2줄까지 표시됩니다.
-    *   **저자 정보:** `Label`을 사용하여 사람 아이콘(`person.fill`)과 함께 표시됩니다. 여러 명의 저자는 쉼표(`, `)로 구분되며, 최대 2줄까지 표시됩니다.
-    *   **출판사 정보:** `Label`을 사용하여 건물 아이콘(`building.2.fill`)과 함께 표시되며, 최대 1줄까지 표시됩니다.
-*   **가격 및 할인 정보:**
-    *   **즐겨찾기 버튼:** 별 아이콘(`star.fill`)으로 표시됩니다.
-    *   **가격 표시:**
-        *   할인된 가격이 있는 경우: 원가는 작게 회색 취소선으로 표시되고, 할인된 가격은 빨간색으로 강조되며, 옆에 할인율(예: `(25.0%)`)이 함께 표시됩니다.
-        *   할인된 가격이 없는 경우: 원가만 굵은 글씨로 표시됩니다.
-
-## `BookItemView` 사용 방법 (예시)
-
-`BookItemView`는 `BookItemViewModel`을 통해 초기화됩니다. `BookItemViewModel`은 `BookItemModel` 인스턴스를 필요로 합니다.
-
-```swift
-// BookItemView를 사용하는 예시 (예: 리스트 내에서)
-
-// BookItemModel은 다른 파일에 정의되어 있다고 가정합니다.
-// struct BookItemModel: Identifiable { ... }
-
-// BookItemView를 초기화할 때 BookItemViewModel을 생성하여 전달합니다.
-let sampleBook = BookItemModel(
-    isbn: "8996991341 9788996991342",
-    coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-    title: "미움받을 용기",
-    authors: ["기시미 이치로", "고가 후미타케"],
-    publisher: "인플루엔셜",
-    status: "정상",
-    price: 19000,
-    salePrice: 12000
-)
-
-BookItemView(viewModel: BookItemViewModel(book: sampleBook))
-```
+---

@@ -12,24 +12,71 @@ class DIContainer {
 
     private init() {}
     
-    
-    //MARK: - DataSources
-    
+    // MARK: - Services
+    private func makeAPIService() -> APIService {
+        return APIService.shared
+    }
+
+    // MARK: - DataSources
+    private func makeBookDataSource() -> BookDataSource {
+        return KakaoBookDataSource(apiService: makeAPIService())
+    }
 
     // MARK: - Repositories
     func makeBookRepository() -> BookRepository {
-        // 실제 앱에서는 여기에 APIClient 등을 주입받아 RealBookRepository를 생성합니다.
-        // 현재는 MockBookDataSource를 사용하여 MockBookRepository를 반환합니다.
-        let dataSource = MockBookDataSource()
-        return MockBookRepository(dataSource: dataSource)
+        return RealBookRepository(dataSource: makeBookDataSource())
     }
 
     // MARK: - Use Cases
-    func makeFetchBooksUseCase() -> FetchBooksUseCase {
-        return FetchBooksUseCaseImpl(repository: makeBookRepository())
+    func makeSearchUseCase() -> BooksListUseCase {
+        return APISearchUseCase(repository: makeBookRepository())
+    }
+
+    func makeFavoritesUseCase() -> BooksListUseCase {
+        return LocalFavoritesUseCase()
+    }
+
+    // MARK: - ViewModels
+    func makeSearchBooksListViewModel() -> BooksListViewModel {
+        let availableSortOptions: [SortOption] = [.accuracy, .latest]
+        return BooksListViewModel(
+            useCase: makeSearchUseCase(),
+            initialSortOption: .accuracy,
+            availableSortOptions: availableSortOptions
+        )
+    }
+
+    func makeFavoritesBooksListViewModel() -> BooksListViewModel {
+        let availableSortOptions: [SortOption] = [.titleAsc, .titleDesc, .priceFilter]
+        return BooksListViewModel(
+            useCase: makeFavoritesUseCase(),
+            initialSortOption: .titleAsc,
+            availableSortOptions: availableSortOptions
+        )
+    }
+}
+
+//MARK: - MockDIContainer
+class MockDIContainer {
+    
+    func makeDataSource() -> BookDataSource {
+        return MockBookDataSource()
     }
     
-    func makeBooksListViewModel() -> BooksListViewModel {
-        return BooksListViewModel(fetchBooksUseCase: makeFetchBooksUseCase())
+    func makeRepository() -> BookRepository {
+        return MockBookRepository(dataSource: makeDataSource())
+    }
+    
+    func makeSearchUseCase() -> BooksListUseCase {
+        return APISearchUseCase(repository: makeRepository())
+    }
+    
+    func makeSearchViewModel() -> BooksListViewModel {
+        let availableSortOptions: [SortOption] = [.accuracy, .latest]
+        return BooksListViewModel(
+            useCase: makeSearchUseCase(),
+            initialSortOption: .accuracy,
+            availableSortOptions: availableSortOptions
+        )
     }
 }

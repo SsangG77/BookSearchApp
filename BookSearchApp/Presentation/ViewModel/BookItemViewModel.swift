@@ -28,7 +28,7 @@ struct BookItemViewModel {
     }
 
     var coverURL: URL? {
-        URL(string: book.coverURL)
+        URL(string: book.thumbnail)
     }
 
     var publisher: String {
@@ -36,11 +36,11 @@ struct BookItemViewModel {
     }
 
     var originalPrice: Int {
-        book.price
+        book.price > 0 ? book.price : 0
     }
 
     var salePrice: Int {
-        book.salePrice
+        book.salePrice > 0 ? book.salePrice : 0
     }
 
     var isDiscounted: Bool {
@@ -48,7 +48,7 @@ struct BookItemViewModel {
     }
     
     var status: String {
-        book.status
+        book.status == "" ? "정보 없음" : book.status
     }
 
     var discountPercentage: String {
@@ -60,6 +60,6 @@ struct BookItemViewModel {
     var publishedDateText: String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/dd"
-        return dateFormatter.string(from: book.date)
+        return dateFormatter.string(from: book.datetime)
     }
 }

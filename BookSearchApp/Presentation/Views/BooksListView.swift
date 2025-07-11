@@ -9,120 +9,107 @@ import SwiftUI
 import RxSwift
 import RxCocoa
 
-// MARK: - Domain Layer (Use Case Protocol)
-protocol FetchBooksUseCase {
-    func execute(page: Int) -> Observable<[BookItemModel]>
+enum ViewType {
+    case search, favorite
 }
 
-// MARK: - Domain Layer (Use Case Implementation)
-class FetchBooksUseCaseImpl: FetchBooksUseCase {
-    private let repository: BookRepository
-
-    init(repository: BookRepository) {
-        self.repository = repository
-    }
-
-    func execute(page: Int) -> Observable<[BookItemModel]> {
-        return repository.fetchBooks(page: page)
-    }
-}
-
-// MARK: - BooksListViewModel (프레젠테이션 계층)
-class BooksListViewModel: ObservableObject {
-    private let disposeBag = DisposeBag()
-    let bookItemViewModelsSubject = BehaviorRelay<[BookItemViewModel]>(value: [])
-    private let fetchBooksUseCase: FetchBooksUseCase
-
-    var bookItemViewModels: Observable<[BookItemViewModel]> {
-        return bookItemViewModelsSubject.asObservable()
-    }
-
-    init(fetchBooksUseCase: FetchBooksUseCase) {
-        self.fetchBooksUseCase = fetchBooksUseCase
-    }
-
-    func loadBooks(searchText: String = "", page: Int = 1) {
-        fetchBooksUseCase.execute(page: page) // page 매개변수 전달
-            .map { bookModels in
-                bookModels.map(BookItemViewModel.init)
-            }
-            .map { viewModels in
-                if searchText.isEmpty {
-                    return viewModels
-                } else {
-                    return viewModels.filter { bookViewModel in
-                        bookViewModel.title.localizedCaseInsensitiveContains(searchText) ||
-                        bookViewModel.authorsText.localizedCaseInsensitiveContains(searchText) ||
-                        bookViewModel.publisher.localizedCaseInsensitiveContains(searchText)
-                    }
-                }
-            }
-            .subscribe(onNext: { [weak self] viewModels in
-                self?.bookItemViewModelsSubject.accept(viewModels)
-            })
-            .disposed(by: disposeBag)
-    }
-}
-
-// MARK: - BooksListView (프레젠테이션 계층)
+/// 재사용 가능한 도서 리스트뷰
 struct BooksListView: View {
-    @StateObject var viewModel: BooksListViewModel // StateObject로 뷰 모델 주입
-    @State private var displayedBooks: [BookItemViewModel] = []
-    @State private var searchText: String = "" // 검색 텍스트 추가
-    private let disposeBag = DisposeBag()
-
-    init(viewModel: BooksListViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-        
+    @StateObject var viewModel: BooksListViewModel
+    var viewType: ViewType
+    @State private var searchText: String = ""
+    @State private var showingSortOptions = false
+    @Environment(\.isSearching) private var isSearching // isSearching 환경 변수 추가
+    
+    init(viewModel: BooksListViewModel, viewType: ViewType) {
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.viewType = viewType
     }
     
-
+    //MARK: - body
     var body: some View {
-        NavigationView { // NavigationView로 감쌉니다.
+        NavigationView {
+            VStack(spacing: 0) {
+                // 정렬 선택 뷰
+                SortOptionsSectionView(
+                    viewModel: viewModel,
+                    showingSortOptions: $showingSortOptions,
+                    searchText: searchText
+                )
+                .padding(.bottom, 7)
+                
+                // 컨텐츠 영역
+                contentView
+                
+            }
+            .background(Color.mainColor)
+            .opacity(isSearching ? 0 : 1) // 검색 중일 때 투명하게
+            .animation(.easeInOut, value: isSearching) // 애니메이션 적용
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(viewType == .search ? "검색" : "즐겨찾기")
+                        .jalnanFont(size: 18)
+                        .opacity(isSearching ? 0 : 1) // 검색 중일 때 투명하게
+                }
+            }
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .always)
+            )
+            .onSubmit(of: .search) {
+                viewModel.loadBooks(searchText: searchText)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var contentView: some View {
+        
+        switch viewModel.state {
+        case .idle:
+            // 초기 상태 (아무것도 표시하지 않거나, 검색을 유도하는 메시지 표시 가능)
+            Text("검색어를 입력해주세요.")
+                .jalnanFont(size: 18)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .loading:
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .success(let books):
             List {
-                ForEach(displayedBooks, id: \.id) { bookItemViewModel in
-                    BookItemView(viewModel: bookItemViewModel)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear) // 배경도 투명하게
-                    
+                ForEach(books, id: \.id) { book in
+                    BookItemView(
+                        viewModel: BookItemViewModel(book: book)
+                    )
+                    .listRowSeparator(.hidden) // 아이템 구분선 제거
+                    .listRowBackground(Color.clear) // 아이템 배경색 투명
                 }
             }
             .listStyle(.plain)
-            .background(Color.mainColor) // 리스트 배경색 설정
-            .padding(.top, -70) // 검색창과의 간격 조절 (예시 값)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("검색")
-                        .jalnanFont(size: 18)
-                        .foregroundColor(.white)
-                }
-            }
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
-            .onSubmit(of: .search) { // 검색 버튼 눌렀을 때
-                viewModel.loadBooks(searchText: searchText)
-            }
-            .onAppear {
-                viewModel.bookItemViewModels
-                    .subscribe(onNext: { viewModels in
-                        self.displayedBooks = viewModels
-                    })
-                    .disposed(by: disposeBag)
-                // 초기 로드는 더 이상 여기서 하지 않습니다.
-            }
+        case .error(let message):
+            Text(message)
+                .jalnanFont(size: 18)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .empty:
+            Text("도서가 없어요😢")
+                .jalnanFont(size: 17)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        
     }
-
 }
+
 
 
 //MARK: - Preview
 #Preview {
-    let booksListViewModel = DIContainer.shared.makeBooksListViewModel()
-
-    NavigationView {
-        BooksListView(viewModel: booksListViewModel)
-    }
+    let apiUseCase = APISearchUseCase(
+        repository: DIContainer.shared.makeBookRepository()
+    )
+    
+    let viewModel = BooksListViewModel(
+        useCase: apiUseCase,
+        initialSortOption: .accuracy,
+        availableSortOptions: [.accuracy, .latest]
+    )
+    
+    BooksListView(viewModel: viewModel, viewType: .search)
 }
-
-

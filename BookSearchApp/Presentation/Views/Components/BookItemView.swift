@@ -12,30 +12,38 @@ struct BookItemView: View {
     
     init(viewModel: BookItemViewModel) {
         self.viewModel = viewModel
+        print(viewModel)
     }
 
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
             bookImage(coverImageUrl: viewModel.coverURL)
-            bookContents(
-                bookTitle: viewModel.title,
-                bookAuthors: viewModel.authorsText,
-                publisher: viewModel.publisher,
-                date: viewModel.publishedDateText
-            )
-            Spacer()
-            favoriteAndPriceView(
-                originalPrice: viewModel.originalPrice,
-                salePrice: viewModel.salePrice,
-                discountPercentage: viewModel.discountPercentage,
-                isDiscounted: viewModel.isDiscounted,
-                status: viewModel.status
-            )
+            
+            VStack {
+                bookContents(
+                    bookTitle: viewModel.title,
+                    bookAuthors: viewModel.authorsText,
+                    publisher: viewModel.publisher,
+                    date: viewModel.publishedDateText,
+                    status: viewModel.status
+                )
+                
+                priceView(
+                    originalPrice: viewModel.originalPrice,
+                    salePrice: viewModel.salePrice,
+                    discountPercentage: viewModel.discountPercentage,
+                    isDiscounted: viewModel.isDiscounted
+                )
+                
+            }
+            .padding(7)
+            
+            
         }
         .padding(5)
         .background(.white)
         .cornerRadius(12)
-        .frame(height: 180)
+        .frame(height: 190)
         .listRowBackground(Color.clear) // 리스트 행의 배경을 투명하게 설정
         
     }
@@ -68,7 +76,7 @@ struct BookItemView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(width: 100, height: .infinity)
+        .frame(width: 110, height: .infinity)
         .background(.gray.opacity(0.2))
         .cornerRadius(8)
         .clipped()
@@ -80,27 +88,41 @@ struct BookItemView: View {
     ///   - bookAuthors: 작가 문자열 배열
     ///   - publisher: 출판사
     ///   - date: 출판 날짜
+    ///   - status: 도서 상태
     /// - Returns: some View
     func bookContents(
         bookTitle: String,
         bookAuthors: String,
         publisher: String,
-        date: String
+        date: String,
+        status: String
     ) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
+        VStack(alignment: .leading, spacing: 8) {
             
-            Text("도서")
-                .foregroundColor(.gray)
-                .jalnanFont(size: 11)
+            HStack {
+                Text("도서")
+                    .jalnanFont(size: 11, color: .gray)
+                
+                Spacer()
+                
+                // 즐겨찾기 아이콘
+                Button(action: {
+                    // 즐겨찾기 토글 액션 (여기에 실제 로직 추가)
+                    print(viewModel.title)
+                }) {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(Color.mainColor)
+                }
+            }
+            
             
             Text(bookTitle)
-                .jalnanFont(size: 17)
+                .jalnanFont(size: 18, color: .black)
                 .lineLimit(2)
             
             Label { // Label로 아이콘 + 저자 표시
                 Text(bookAuthors)
-                    .jalnanFont(size: 12)
-                    .foregroundColor(.gray)
+                    .jalnanFont(size: 11, color: .black)
                     .lineLimit(2) // 저자 최대 2줄까지 표시
                     .fixedSize(horizontal: false, vertical: true) // 텍스트가 수평 공간에 맞춰 자연스럽게 줄바꿈되도록 허용
             } icon: {
@@ -108,19 +130,32 @@ struct BookItemView: View {
                     .foregroundColor(.gray)
             }
             
-            Label { // 출판사 Label 추가
-                Text(publisher)
-                    .jalnanFont(size: 12)
-                    .foregroundColor(.gray)
-                    .lineLimit(1) // 출판사는 1줄만 표시
-            } icon: {
-                Image(systemName: "building.2.fill") // 출판사 아이콘
-                    .foregroundColor(.gray)
+            
+            HStack {
+                Label { // 출판사 Label 추가
+                    Text(publisher)
+                        .jalnanFont(size: 10, color: .gray)
+                        .lineLimit(1) // 출판사는 1줄만 표시
+                } icon: {
+                    Image(systemName: "building.2.fill") // 출판사 아이콘
+                        .foregroundColor(.gray)
+                }
+                
+                Spacer()
+                
+                Text(status)
+                    .jalnanFont(size: 12, color: .black)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                
             }
             
-            Spacer()
+            
         }
-        .padding(.vertical, 5)
         .frame(maxHeight: .infinity)
     }
     
@@ -134,59 +169,42 @@ struct BookItemView: View {
     ///   - isDiscounted: 할인 유무
     ///   - status: 판매 상태
     /// - Returns: some View
-    func favoriteAndPriceView(
+    func priceView(
         originalPrice: Int,
         salePrice: Int,
         discountPercentage: String,
-        isDiscounted: Bool,
-        status: String
+        isDiscounted: Bool
     ) -> some View {
-        VStack(alignment: .trailing, spacing: 7) {// 오른쪽 정렬
-            
-            // 즐겨찾기 아이콘
-            Button(action: {
-                // 즐겨찾기 토글 액션 (여기에 실제 로직 추가)
-                print(viewModel.title)
-            }) {
-                Image(systemName: "heart.fill")
-                    .foregroundColor(.yellow)
-            }
-            
-            Spacer() // 가격을 아래로 밀기
-            
-            Text(status)
-                .foregroundColor(.gray)
-                .jalnanFont(size: 15)
-            
-            Divider()
-            
-            
-            // 책 가격 표시
-            if isDiscounted { //할인됨 유무 확인
-                // 할인된 가격이 있을 경우 분기 처리
-                
-                Text("\(originalPrice) ₩ ")
-                    .jalnanFont(size: 11)
-                    .foregroundColor(.gray)
-                    .strikethrough() // 취소선
-                
-                Text("\(salePrice) ₩")
-                    .jalnanFont(size: 16)
-                    .fontWeight(.bold)
+        
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing, spacing: 7) {// 오른쪽 정렬
+                // 책 가격 표시
+                if !isDiscounted {
+                    // 할인된 가격이 없
+                    Text("\(originalPrice) ₩")
+                        .jalnanFont(size: 16, color: .black, weight: .bold)
                     
-                Text("\(discountPercentage)%") // 할인율 표시
-                    .jalnanFont(size: 14)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
-            } else {
-                // 할인된 가격이 없을 경우
-                Text("\(originalPrice) ₩")
-                    .jalnanFont(size: 16)
-                    .fontWeight(.bold)
+                } else  if salePrice == 0 || originalPrice == 0 {
+                    Text("가격 정보 없음")
+                        .jalnanFont(size: 16, color: .black, weight: .bold)
+                } else {
+                    // 할인된 가격이 있을 경우
+                    Text("\(originalPrice) ₩ ")
+                        .jalnanFont(size: 12, color: .gray)
+                        .strikethrough() // 취소선
+                    
+                    HStack(alignment: .bottom) {
+                        Text("\(discountPercentage)%") // 할인율 표시
+                            .jalnanFont(size: 12, color: .red, weight: .bold)
+                        
+                        Text("\(salePrice) ₩")
+                            .jalnanFont(size: 18, color: .black, weight: .bold)
+                    }
+                }
             }
+            .frame(maxHeight: .infinity)
         }
-        .padding(9)
-        .frame(maxHeight: .infinity)
     }
 }
 
@@ -203,16 +221,20 @@ struct BookItemView: View {
             BookItemView(
                 viewModel: BookItemViewModel(
                     book: BookItemModel(
-                    isbn: "8996991341 9788996991342",
-                    coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                    title: "미움받을 용기",
-                    authors: ["기시미 이치로", "고가 후미타케"],
-                    publisher: "인플루엔셜",
-                    date: Date(),
-                    status: "절판",
-                    price: 19000,
-                    salePrice: 12000
-                ))
+                        title: "미움받을 용기",
+                        contents: "test",
+                        url: "https://search.daum.net/search?w=bookpage&bookId=1467038&q=%EB%AF%B8%EC%9B%80%EB%B0%9B%EC%9D%84+%EC%9A%A9%EA%B8%B0",
+                        isbn: "8996991341 9788996991342",
+                        authors: ["기시미 이치로", "고가 후미타케"],
+                        publisher: "인플루엔셜",
+                        translators:["전경아"],
+                        price: 19000,
+                        salePrice: 12000,
+                        thumbnail: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
+                        status: "정상판매",
+                        datetime: Date(),
+                    )
+                )
             )
         }
         

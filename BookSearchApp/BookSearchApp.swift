@@ -13,7 +13,7 @@ struct BookSearchApp: App {
         // UITabBarAppearance를 사용하여 탭바 배경색 설정
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = UIColor.systemBackground // 원하는 배경색으로 설정
+        tabBarAppearance.backgroundColor = UIColor.white // 원하는 배경색으로 설정
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
 
@@ -26,17 +26,23 @@ struct BookSearchApp: App {
     var body: some Scene {
         WindowGroup {
             TabView {
-                BooksListView(viewModel: DIContainer.shared.makeBooksListViewModel())
-                    .tabItem {
-                        Label("책 검색", systemImage: "book.closed.fill")
-                    }
+                // isMock: true로 설정하면 Mock 데이터를 사용하여 테스트할 수 있습니다.
+                BooksListView(
+                    viewModel: DIContainer.shared.makeSearchBooksListViewModel(),
+                    viewType: .search
+                )
+                .tabItem {
+                    Label("책 검색", systemImage: "magnifyingglass")
+                }
                 
-                FavoriteBooksView()
-                    .tabItem {
-                        Label("즐겨찾기", systemImage: "star.fill")
-                    }
+                BooksListView(
+                    viewModel: DIContainer.shared.makeFavoritesBooksListViewModel(),
+                    viewType: .favorite
+                )
+                .tabItem {
+                    Label("즐겨찾기", systemImage: "heart.fill")
+                }
             }
-            
             
         }
     }

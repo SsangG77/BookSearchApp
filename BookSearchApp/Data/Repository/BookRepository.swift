@@ -10,102 +10,59 @@ import RxSwift
 
 // MARK: - Data Layer (DataSource Protocol)
 protocol BookDataSource {
-    func fetchBooks(page: Int) -> Observable<[BookItemModel]>
+    func fetchBooks(query: String, sort: String, page: Int) -> Observable<[BookItemModel]>
 }
 
-// MARK: - Data Layer (DataSource Implementation - Mock)
+// MARK: - Data Layer (DataSource Implementations)
+
+// 실제 Kakao API를 사용하는 데이터 소스
+class KakaoBookDataSource: BookDataSource {
+    private let apiService: APIService
+
+    init(apiService: APIService) {
+        self.apiService = apiService
+    }
+
+    func fetchBooks(query: String, sort: String, page: Int) -> Observable<[BookItemModel]> {
+        return apiService.searchBooks(query: query, sort: sort, page: page)
+            .map { $0.documents } // 응답에서 documents 배열만 추출
+    }
+}
+
+// 테스트나 개발 중에 사용하는 Mock 데이터 소스
 class MockBookDataSource: BookDataSource {
-    func fetchBooks(page: Int) -> Observable<[BookItemModel]> {
-        // 실제 API 호출 대신 샘플 데이터를 반환합니다.
-        // 페이지에 따라 다른 샘플 데이터를 반환하도록 수정
-        let allSampleBooks = [
-            BookItemModel(
-                isbn: "8996991341 9788996991342",
-                coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                title: "미움받을 용기",
-                authors: ["기시미 이치로", "고가 후미타케"],
-                publisher: "인플루엔셜",
-                date: Date(timeIntervalSinceReferenceDate: 1416153600),
-                status: "정상",
-                price: 19000,
-                salePrice: 12000
-            ),
-            BookItemModel(
-                isbn: "978893291724",
-                coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                title: "어린 왕자",
-                authors: ["앙투안 드 생텍쥐페리"],
-                publisher: "문학동네",
-                date: Date(timeIntervalSinceReferenceDate: 1416153600),
-                status: "정상",
-                price: 10000,
-                salePrice: 10000
-            ),
-            BookItemModel(
-                isbn: "978893291725",
-                coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                title: "데미안",
-                authors: ["헤르만 헤세"],
-                publisher: "민음사",
-                date: Date(timeIntervalSinceReferenceDate: 1416153600),
-                status: "절판",
-                price: 15000,
-                salePrice: 15000
-            ),
-            BookItemModel(
-                isbn: "8996991341 9788996991342-2",
-                coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                title: "미움받을 용기 2",
-                authors: ["기시미 이치로", "고가 후미타케"],
-                publisher: "인플루엔셜",
-                date: Date(timeIntervalSinceReferenceDate: 1416153600),
-                status: "정상",
-                price: 20000,
-                salePrice: 15000
-            ),
-            BookItemModel(
-                isbn: "978893291724-2",
-                coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                title: "어린 왕자 2",
-                authors: ["앙투안 드 생텍쥐페리"],
-                publisher: "문학동네",
-                date: Date(timeIntervalSinceReferenceDate: 1416153600),
-                status: "정상",
-                price: 11000,
-                salePrice: 11000
-            ),
-            BookItemModel(
-                isbn: "978893291725-2",
-                coverURL: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
-                title: "데미안 2",
-                authors: ["헤르만 헤세"],
-                publisher: "민음사",
-                date: Date(timeIntervalSinceReferenceDate: 1416153600),
-                status: "절판",
-                price: 16000,
-                salePrice: 16000
-            )
+    func fetchBooks(query: String, sort: String, page: Int) -> Observable<[BookItemModel]> {
+        // 샘플 데이터 반환
+        let sampleBooks: [BookItemModel] = [
+            // 이 부분은 실제 BookItemModel에 맞게 채워야 합니다.
+            // 현재 BookItemModel의 모든 프로퍼티를 만족하는 샘플 데이터를 생성하기는 어렵습니다.
+            // 필요한 경우, 실제 API 응답을 기반으로 샘플 데이터를 만드세요.
         ]
-
-        let pageSize = 3 // 한 페이지당 3개씩 반환
-        let startIndex = (page - 1) * pageSize
-        let endIndex = min(startIndex + pageSize, allSampleBooks.count)
-
-        guard startIndex < allSampleBooks.count else {
-            return Observable.just([]) // 더 이상 데이터가 없음
-        }
-
-        let paginatedBooks = Array(allSampleBooks[startIndex..<endIndex])
-        return Observable.just(paginatedBooks)
+        return Observable.just(sampleBooks).delay(.seconds(1), scheduler: MainScheduler.instance) // 실제 네트워크처럼 딜레이 추가
     }
 }
 
 // MARK: - Domain Layer (Repository Protocol)
 protocol BookRepository {
-    func fetchBooks(page: Int) -> Observable<[BookItemModel]>
+    func fetchBooks(query: String, sort: String, page: Int) -> Observable<[BookItemModel]>
 }
 
-// MARK: - Data Layer (Repository Implementation - Mock)
+// MARK: - Data Layer (Repository Implementations)
+
+// 실제 API를 사용하는 리포지토리
+class RealBookRepository: BookRepository {
+    private let dataSource: BookDataSource
+
+    init(dataSource: BookDataSource) {
+        self.dataSource = dataSource
+    }
+
+    func fetchBooks(query: String, sort: String, page: Int) -> Observable<[BookItemModel]> {
+        return dataSource.fetchBooks(query: query, sort: sort, page: page)
+    }
+}
+
+// Mock 데이터를 사용하는 리포지토리
 class MockBookRepository: BookRepository {
     private let dataSource: BookDataSource
 
@@ -113,7 +70,7 @@ class MockBookRepository: BookRepository {
         self.dataSource = dataSource
     }
 
-    func fetchBooks(page: Int) -> Observable<[BookItemModel]> {
-        return dataSource.fetchBooks(page: page)
+    func fetchBooks(query: String, sort: String, page: Int) -> Observable<[BookItemModel]> {
+        return dataSource.fetchBooks(query: query, sort: sort, page: page)
     }
 }
