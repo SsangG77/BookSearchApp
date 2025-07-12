@@ -7,10 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		91668F202E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */; };
+		91668F212E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */; };
 		91AACF2B2E1FB88100861DB5 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2A2E1FB88100861DB5 /* RxBlocking */; };
 		91AACF2D2E1FB88100861DB5 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2C2E1FB88100861DB5 /* RxCocoa */; };
 		91AACF2F2E1FB88100861DB5 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2E2E1FB88100861DB5 /* RxRelay */; };
 		91AACF5C2E212C3400861DB5 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */; };
+		91BC92B82E224AC50039E150 /* BookSearchApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 91BC92B62E224AC50039E150 /* BookSearchApp.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,10 +34,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoriteBook+CoreDataClass.swift"; sourceTree = "<group>"; };
+		91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoriteBook+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		91AACEE52E1F546C00861DB5 /* BookSearchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookSearchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91AACEF72E1F546E00861DB5 /* BookSearchAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookSearchAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		91AACF012E1F546E00861DB5 /* BookSearchAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BookSearchAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		91BC92B72E224AC50039E150 /* BookSearchApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BookSearchApp.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +51,18 @@
 			);
 			target = 91AACEE42E1F546C00861DB5 /* BookSearchApp */;
 		};
+		91AACF682E220C0500861DB5 /* Exceptions for "BookSearchApp" folder in "BookSearchAppTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Data/DataSource/BookDataSource.swift,
+				Data/Repository/APIBookRepository.swift,
+				Data/Repository/BookFetchRepository.swift,
+				Data/Repository/FavoriteRepositoryImpl.swift,
+				Data/Repository/LocalBookRepository.swift,
+				Domain/Entity/BookItemModel.swift,
+			);
+			target = 91AACEF62E1F546E00861DB5 /* BookSearchAppTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +70,7 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				91AACF402E20A0DF00861DB5 /* Exceptions for "BookSearchApp" folder in "BookSearchApp" target */,
+				91AACF682E220C0500861DB5 /* Exceptions for "BookSearchApp" folder in "BookSearchAppTests" target */,
 			);
 			path = BookSearchApp;
 			sourceTree = "<group>";
@@ -99,6 +118,9 @@
 		91AACEDC2E1F546C00861DB5 = {
 			isa = PBXGroup;
 			children = (
+				91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */,
+				91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */,
+				91BC92B62E224AC50039E150 /* BookSearchApp.xcdatamodeld */,
 				91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */,
 				91AACEE72E1F546C00861DB5 /* BookSearchApp */,
 				91AACEFA2E1F546E00861DB5 /* BookSearchAppTests */,
@@ -268,6 +290,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91BC92B82E224AC50039E150 /* BookSearchApp.xcdatamodeld in Sources */,
+				91668F202E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift in Sources */,
+				91668F212E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -635,6 +660,19 @@
 			productName = RxRelay;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		91BC92B62E224AC50039E150 /* BookSearchApp.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				91BC92B72E224AC50039E150 /* BookSearchApp.xcdatamodel */,
+			);
+			currentVersion = 91BC92B72E224AC50039E150 /* BookSearchApp.xcdatamodel */;
+			path = BookSearchApp.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 91AACEDD2E1F546C00861DB5 /* Project object */;
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-// MARK: - API 응답 전체 구조
+// MARK: - API 응답 모델
 // 중요: 이 모델을 디코딩하는 JSONDecoder는 반드시 다음 두 가지 전략을 설정해야 합니다.
 // 1. decoder.keyDecodingStrategy = .convertFromSnakeCase
 // 2. decoder.dateDecodingStrategy = .iso8601
@@ -17,6 +17,7 @@ struct BookSearchResponse: Decodable, Hashable {
     let documents: [BookItemModel]
 }
 
+//MARK: - Meta 데이터
 struct Meta: Decodable, Hashable {
     let isEnd: Bool
     let pageableCount: Int
@@ -25,24 +26,23 @@ struct Meta: Decodable, Hashable {
 
 // MARK: - 책 아이템 모델
 struct BookItemModel: Identifiable, Codable, Hashable {
-    var id = UUID() // Identifiable 준수를 위한 프로퍼티
+    var id = UUID()
     let title: String
-    let contents: String
-    let url: String
+    let contents: String?
+    let url: String?
     let isbn: String
     let authors: [String]
-    let publisher: String
+    let publisher: String?
     let translators: [String]
-    let price: Int
-    let salePrice: Int
-    let thumbnail: String
-    let status: String
-    let datetime: Date
+    let price: Int?
+    let salePrice: Int?
+    let thumbnail: String?
+    let status: String?
+    let datetime: Date?
 
-    // API 응답 키와 모델 프로퍼티 이름이 다른 경우 수동 매핑
+    // API 응답 키와 모델 속성 이름이 다르면 변환
     enum CodingKeys: String, CodingKey {
         case title, contents, url, isbn, authors, publisher, translators, price, salePrice, thumbnail, status, datetime
-        // 'id'는 API 응답에 없으므로 CodingKeys에서 제외하여 자동 생성을 유도합니다.
     }
 }
 

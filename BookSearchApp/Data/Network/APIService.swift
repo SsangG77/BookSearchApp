@@ -81,7 +81,7 @@ class APIService {
                     }
 
                     let bookResponse = try decoder.decode(BookSearchResponse.self, from: data)
-                    print("--------------------------------------------------------------")
+//                    print("--------------------------------------------------------------")
 //                    print("응답 결과: \(bookResponse)")
                     observer.onNext(bookResponse)
                     observer.onCompleted()

@@ -26,24 +26,20 @@ struct BookSearchApp: App {
     var body: some Scene {
         WindowGroup {
             TabView {
-                // isMock: true로 설정하면 Mock 데이터를 사용하여 테스트할 수 있습니다.
                 BooksListView(
-                    viewModel: DIContainer.shared.makeSearchBooksListViewModel(),
-                    viewType: .search
+                    viewModel: DIContainer.shared.makeSearchBooksListViewModel()
                 )
                 .tabItem {
-                    Label("책 검색", systemImage: "magnifyingglass")
+                    Label("검색", systemImage: "magnifyingglass")
                 }
                 
                 BooksListView(
-                    viewModel: DIContainer.shared.makeFavoritesBooksListViewModel(),
-                    viewType: .favorite
+                    viewModel: DIContainer.shared.makeFavoritesBooksListViewModel()
                 )
                 .tabItem {
                     Label("즐겨찾기", systemImage: "heart.fill")
                 }
             }
-            
         }
     }
 }

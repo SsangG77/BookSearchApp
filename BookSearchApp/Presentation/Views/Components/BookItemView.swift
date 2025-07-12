@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct BookItemView: View {
-    let viewModel: BookItemViewModel
+    @ObservedObject var viewModel: BookItemViewModel
     
     init(viewModel: BookItemViewModel) {
-        self.viewModel = viewModel
-        print(viewModel)
+        self._viewModel = ObservedObject(wrappedValue: viewModel)
     }
 
     var body: some View {
+        // BookItemView body 로드됨 프린트문 추가
         HStack(alignment: .center, spacing: 10) {
             bookImage(coverImageUrl: viewModel.coverURL)
             
@@ -76,7 +76,7 @@ struct BookItemView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(width: 110, height: .infinity)
+        .frame(width: 110, height: 180) // 높이를 명시적인 값으로 변경
         .background(.gray.opacity(0.2))
         .cornerRadius(8)
         .clipped()
@@ -107,26 +107,28 @@ struct BookItemView: View {
                 
                 // 즐겨찾기 아이콘
                 Button(action: {
-                    // 즐겨찾기 토글 액션 (여기에 실제 로직 추가)
-                    print(viewModel.title)
+                    print("BookItemView: 즐겨찾기 버튼 탭됨") // 확인용 프린트문 유지
+                    viewModel.toggleFavorite()
                 }) {
-                    Image(systemName: "heart.fill")
+                    Image(systemName: viewModel.isFavorite ? "heart.fill" : "heart")
+                        .font(.title) // 폰트 크기 조절
                         .foregroundColor(Color.mainColor)
                 }
+                
             }
             
             
             Text(bookTitle)
-                .jalnanFont(size: 18, color: .black)
+                .jalnanFont(size: 16, color: .black)
                 .lineLimit(2)
             
             Label { // Label로 아이콘 + 저자 표시
                 Text(bookAuthors)
                     .jalnanFont(size: 11, color: .black)
                     .lineLimit(2) // 저자 최대 2줄까지 표시
-                    .fixedSize(horizontal: false, vertical: true) // 텍스트가 수평 공간에 맞춰 자연스럽게 줄바꿈되도록 허용
+                    .fixedSize(horizontal: false, vertical: true) // 텍스트가 줄바꿈되도록 허용
             } icon: {
-                Image(systemName: "person.fill") // 저자(사람) 아이콘
+                Image(systemName: "person.fill") // 사람 아이콘
                     .foregroundColor(.gray)
             }
             
@@ -143,14 +145,16 @@ struct BookItemView: View {
                 
                 Spacer()
                 
-                Text(status)
-                    .jalnanFont(size: 12, color: .black)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.black, lineWidth: 1)
-                    )
+                if status != "" {
+                    Text(status)
+                        .jalnanFont(size: 12, color: .black)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.black, lineWidth: 1)
+                        )
+                }
                 
             }
             
@@ -185,7 +189,7 @@ struct BookItemView: View {
                     Text("\(originalPrice) ₩")
                         .jalnanFont(size: 16, color: .black, weight: .bold)
                     
-                } else  if salePrice == 0 || originalPrice == 0 {
+                } else  if salePrice <= 0 || originalPrice <= 0 {
                     Text("가격 정보 없음")
                         .jalnanFont(size: 16, color: .black, weight: .bold)
                 } else {
@@ -232,8 +236,9 @@ struct BookItemView: View {
                         salePrice: 12000,
                         thumbnail: "https://search1.kakaocdn.net/thumb/R120x174.q85/?fname=http%3A%2F%2Ft1.daumcdn.net%2Flbook%2Fimage%2F1467038",
                         status: "정상판매",
-                        datetime: Date(),
-                    )
+                        datetime: Date()
+                    ),
+                    favoriteRepository: FavoriteRepositoryImpl(coreDataManager: CoreDataManager.shared)
                 )
             )
         }

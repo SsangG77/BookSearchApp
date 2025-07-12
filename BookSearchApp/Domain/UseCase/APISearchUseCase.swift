@@ -8,14 +8,15 @@
 import Foundation
 import RxSwift
 
+// MARK: - 도서 검색 UseCase 프로토콜 구현체
 class APISearchUseCase: BooksListUseCase {
-    private let repository: BookRepository
+    private let repository: BookFetchRepository
 
-    init(repository: BookRepository) {
+    init(repository: BookFetchRepository) {
         self.repository = repository
     }
 
-    func execute(query: String, sort: SortOption, page: Int) -> Observable<[BookItemModel]> {
+    func execute(query: String, sort: SortOption, page: Int) -> Observable<BookSearchResponse> {
         return repository.fetchBooks(query: query, sort: sort.queryValue, page: page)
     }
 }

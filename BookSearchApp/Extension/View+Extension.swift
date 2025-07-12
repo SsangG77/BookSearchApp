@@ -30,4 +30,13 @@ extension View {
     ) -> some View {
         self.modifier(JalnanFont(size: size, color: color, weight: weight))
     }
+    
+    func listBottomEffect() -> some View {
+           self
+               .frame(width: UIScreen.main.bounds.width)
+               .background(Color.mainColor)
+               .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+               .listRowSeparator(.hidden)
+               .padding()
+       }
 }

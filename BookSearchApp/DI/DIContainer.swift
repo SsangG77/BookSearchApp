@@ -23,17 +23,25 @@ class DIContainer {
     }
 
     // MARK: - Repositories
-    func makeBookRepository() -> BookRepository {
-        return RealBookRepository(dataSource: makeBookDataSource())
+    func makeAPIBookRepository() -> BookFetchRepository {
+        return APIBookFetchRepository(dataSource: makeBookDataSource())
+    }
+    
+    func makeLocalBookRepository() -> BookFetchRepository {
+        return LocalBookFetchRepository(coreDataManager: CoreDataManager.shared)
+    }
+    
+    func makeFavoriteRepository() -> FavoriteRepository {
+        return FavoriteRepositoryImpl(coreDataManager: CoreDataManager.shared)
     }
 
     // MARK: - Use Cases
     func makeSearchUseCase() -> BooksListUseCase {
-        return APISearchUseCase(repository: makeBookRepository())
+        return APISearchUseCase(repository: makeAPIBookRepository())
     }
 
     func makeFavoritesUseCase() -> BooksListUseCase {
-        return LocalFavoritesUseCase()
+        return LocalFavoritesUseCase(bookRepository: makeLocalBookRepository())
     }
 
     // MARK: - ViewModels
@@ -42,7 +50,8 @@ class DIContainer {
         return BooksListViewModel(
             useCase: makeSearchUseCase(),
             initialSortOption: .accuracy,
-            availableSortOptions: availableSortOptions
+            availableSortOptions: availableSortOptions,
+            viewType: .search
         )
     }
 
@@ -51,32 +60,13 @@ class DIContainer {
         return BooksListViewModel(
             useCase: makeFavoritesUseCase(),
             initialSortOption: .titleAsc,
-            availableSortOptions: availableSortOptions
+            availableSortOptions: availableSortOptions,
+            viewType: .favorite
         )
+    }
+    
+    func makeBookItemViewModel(book: BookItemModel) -> BookItemViewModel {
+        return BookItemViewModel(book: book, favoriteRepository: makeFavoriteRepository())
     }
 }
 
-//MARK: - MockDIContainer
-class MockDIContainer {
-    
-    func makeDataSource() -> BookDataSource {
-        return MockBookDataSource()
-    }
-    
-    func makeRepository() -> BookRepository {
-        return MockBookRepository(dataSource: makeDataSource())
-    }
-    
-    func makeSearchUseCase() -> BooksListUseCase {
-        return APISearchUseCase(repository: makeRepository())
-    }
-    
-    func makeSearchViewModel() -> BooksListViewModel {
-        let availableSortOptions: [SortOption] = [.accuracy, .latest]
-        return BooksListViewModel(
-            useCase: makeSearchUseCase(),
-            initialSortOption: .accuracy,
-            availableSortOptions: availableSortOptions
-        )
-    }
-}

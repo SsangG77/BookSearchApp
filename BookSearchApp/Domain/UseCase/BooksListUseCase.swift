@@ -8,7 +8,7 @@
 import Foundation
 import RxSwift
 
-// MARK: - Domain Layer (Use Case Protocol)
+// MARK: - UseCase 프로토콜
 protocol BooksListUseCase {
-    func execute(query: String, sort: SortOption, page: Int) -> Observable<[BookItemModel]>
+    func execute(query: String, sort: SortOption, page: Int) -> Observable<BookSearchResponse>
 }
