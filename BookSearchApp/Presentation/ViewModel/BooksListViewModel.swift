@@ -9,26 +9,6 @@ import Foundation
 import RxSwift
 import SwiftUI
 
-// MARK: - ViewState
-enum ViewState: Equatable {
-    static func == (lhs: ViewState, rhs: ViewState) -> Bool {
-        switch (lhs, rhs) {
-        case (.idle, .idle), (.loading, .loading), (.empty, .empty):
-            return true
-        case (.error(let lhsError), .error(let rhsError)):
-            return lhsError == rhsError
-        default:
-            return false
-        }
-    }
-    
-    case idle
-    case loading
-    case loaded
-    case error(String)
-    case empty
-}
-
 // MARK: - BooksListViewModel
 class BooksListViewModel: ObservableObject {
     private let disposeBag = DisposeBag()
@@ -50,26 +30,32 @@ class BooksListViewModel: ObservableObject {
     // 페이징 관련 상태
     private var currentPage = 1
     private var currentQuery = ""
-    @Published var allLoadedBooks: [BookItemModel] = [] // @Published로 변경
+    @Published var allLoadedBookViewModels: [BookItemViewModel] = []
     @Published var isLastPage = false
     @Published var isLoadingMore = false
     
-    init(useCase: BooksListUseCase, initialSortOption: SortOption, availableSortOptions: [SortOption], viewType: ViewType) {
+    private let favoriteRepository: FavoriteRepository
+    
+    init(
+        useCase: BooksListUseCase,
+        initialSortOption: SortOption,
+        availableSortOptions: [SortOption],
+        viewType: ViewType,
+        favoriteRepository: FavoriteRepository
+    ) {
         self.useCase = useCase
         self.currentSortOption = initialSortOption
         self.availableSortOptions = availableSortOptions
         self.viewType = viewType
-        
-        
+        self.favoriteRepository = favoriteRepository
     }
     
     func loadBooks(searchText: String, page: Int = 1) {
-        print("\(viewType) 뷰모델: loadBooks()")
-        // 새로운 검색이거나, 정렬 옵션이 변경되었을 때 초기화
-        if page == 1 { // 페이지가 1이면 새로운 검색/정렬 시작으로 간주
+        // 새로운 검색이거나, 현재 쿼리가 변경되었을 때 초기화
+        if searchText != currentQuery {
             currentQuery = searchText
             currentPage = 1
-            allLoadedBooks = []
+            allLoadedBookViewModels = []
             isLastPage = false
         }
         
@@ -82,19 +68,27 @@ class BooksListViewModel: ObservableObject {
         
         isLoadingMore = true
         
+        print("BooksListViewModel: useCase.execute()")
         useCase.execute(query: currentQuery, sort: currentSortOption, page: currentPage)
             .subscribe(onNext: { [weak self] response in
-                print("BooksListViewModel.loagBoosts() onNext")
-                print(response)
-                print("")
                 DispatchQueue.main.async {
                     guard let self = self else { return }
                     
-                    self.allLoadedBooks.append(contentsOf: response.documents)
+                    let newViewModels = response.documents.map { book in
+                        BookItemViewModel(
+                            book: book,
+                            favoriteRepository: self.favoriteRepository,
+                            deleteItem: { isbn in
+                                self.deleteFromFavorites(isbn: isbn)
+                            }
+                        )
+                    }
+                    self.allLoadedBookViewModels.append(contentsOf: newViewModels)
+                    
                     self.isLastPage = response.meta.isEnd
                     self.isLoadingMore = false
                     
-                    if self.allLoadedBooks.isEmpty {
+                    if self.allLoadedBookViewModels.isEmpty {
                         self.state = .empty
                     } else {
                         self.state = .loaded // loaded 상태로 변경
@@ -115,5 +109,11 @@ class BooksListViewModel: ObservableObject {
         loadBooks(searchText: currentQuery, page: currentPage)
     }
     
-
+    func deleteFromFavorites(isbn: String) {
+        if  viewType == .favorite {
+            allLoadedBookViewModels.removeAll { $0.book.isbn == isbn }
+        }
+    }
+    
+    
 }

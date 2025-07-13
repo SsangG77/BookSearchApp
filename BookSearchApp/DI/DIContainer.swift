@@ -51,7 +51,8 @@ class DIContainer {
             useCase: makeSearchUseCase(),
             initialSortOption: .accuracy,
             availableSortOptions: availableSortOptions,
-            viewType: .search
+            viewType: .search,
+            favoriteRepository: makeFavoriteRepository()
         )
     }
 
@@ -61,12 +62,8 @@ class DIContainer {
             useCase: makeFavoritesUseCase(),
             initialSortOption: .titleAsc,
             availableSortOptions: availableSortOptions,
-            viewType: .favorite
+            viewType: .favorite,
+            favoriteRepository: makeFavoriteRepository()
         )
     }
-    
-    func makeBookItemViewModel(book: BookItemModel) -> BookItemViewModel {
-        return BookItemViewModel(book: book, favoriteRepository: makeFavoriteRepository())
-    }
 }
-

@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// 정렬 옵션 열거형
+/// 정렬 옵션들
 enum SortOption: String, CaseIterable {
     // API
     case accuracy = "정확도순"

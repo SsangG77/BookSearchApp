@@ -9,21 +9,32 @@ import Foundation
 import RxSwift // RxSwift 추가
 
 // MARK: - Presentation Layer (ViewModel)
-class BookItemViewModel: ObservableObject { // struct -> class, ObservableObject 채택
+class BookItemViewModel: ObservableObject, Identifiable {
     private let disposeBag = DisposeBag()
-    private let book: BookItemModel
-    private let favoriteRepository: FavoriteRepository // FavoriteRepository 주입
+    @Published var book: BookItemModel // 책 모델
+    private let favoriteRepository: FavoriteRepository // 즐겨찾기 책 데이터 처리 객체 주입
     
     @Published var isFavorite: Bool = false // 즐겨찾기 상태
+    
+    var deleteItem: (_ isbn: String) -> Void
 
-    init(book: BookItemModel, favoriteRepository: FavoriteRepository) {
+    init(
+        book: BookItemModel,
+        favoriteRepository: FavoriteRepository,
+        deleteItem: @escaping (_ isbn: String) -> Void
+    ) {
         self.book = book
         self.favoriteRepository = favoriteRepository
+        self.deleteItem = deleteItem
         checkFavoriteStatus()
     }
     
     var id: String {
         book.id.uuidString
+    }
+    
+    var isbn: String {
+        book.isbn
     }
 
     var title: String {
@@ -32,6 +43,10 @@ class BookItemViewModel: ObservableObject { // struct -> class, ObservableObject
 
     var authorsText: String {
         book.authors.joined(separator: ", ")
+    }
+    
+    var translatorsText: String {
+        book.translators.joined(separator: ", ")
     }
 
     var coverURL: URL? {
@@ -49,6 +64,14 @@ class BookItemViewModel: ObservableObject { // struct -> class, ObservableObject
 
     var salePrice: Int {
         book.salePrice ?? 0
+    }
+    
+    var searchURL: String {
+        book.url ?? ""
+    }
+    
+    var contents: String {
+        book.contents ?? "내용 없음"
     }
 
     var isDiscounted: Bool {
@@ -73,6 +96,13 @@ class BookItemViewModel: ObservableObject { // struct -> class, ObservableObject
         return dateFormatter.string(from: date)
     }
     
+    var koreanFormattedPublishedDate: String {
+        guard let date = book.datetime else { return "날짜 정보 없음" }
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy년 MM월 dd일"
+        return dateFormatter.string(from: date)
+    }
+    
     // 즐겨찾기 상태 확인
     private func checkFavoriteStatus() {
         self.isFavorite = favoriteRepository.isBookFavorite(isbn: book.isbn)
@@ -82,6 +112,7 @@ class BookItemViewModel: ObservableObject { // struct -> class, ObservableObject
     func toggleFavorite() {
         print("BookItemViewModel.toggleFavorite()", book.title)
         if isFavorite {
+            deleteItem(book.isbn)
             favoriteRepository.deleteFavoriteBook(isbn: book.isbn)
                 .subscribe(onCompleted: { [weak self] in
                     self?.isFavorite = false
@@ -96,4 +127,3 @@ class BookItemViewModel: ObservableObject { // struct -> class, ObservableObject
         }
     }
 }
-

@@ -34,9 +34,9 @@ extension View {
     func listBottomEffect() -> some View {
            self
                .frame(width: UIScreen.main.bounds.width)
+               .padding()
                .background(Color.mainColor)
                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                .listRowSeparator(.hidden)
-               .padding()
        }
 }
