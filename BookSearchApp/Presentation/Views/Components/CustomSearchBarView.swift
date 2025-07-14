@@ -28,7 +28,6 @@ struct CustomSearchBarView: View {
             Button("취소") {
                 searchText = ""
                 isTextFieldFocused = false // 키보드 내리기
-                onSearch("")
             }
             .foregroundColor(.white)
             .opacity(isTextFieldFocused || !searchText.isEmpty ? 1 : 0) // 포커스, 검색어 있을때만 보이기

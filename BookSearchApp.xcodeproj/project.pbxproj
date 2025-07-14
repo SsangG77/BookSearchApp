@@ -10,11 +10,9 @@
 		9119EDA82E25157F007B8B88 /* FavoriteBook+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */; };
 		9119EDA92E251588007B8B88 /* FavoriteBook+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */; };
 		9119EDAF2E252A7F007B8B88 /* RxCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 9119EDAE2E252A7F007B8B88 /* RxCombine */; };
+		9119EDB82E255B83007B8B88 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9119EDB72E255B83007B8B88 /* RxSwift */; };
 		91668F202E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */; };
 		91668F212E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */; };
-		91AACF2B2E1FB88100861DB5 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2A2E1FB88100861DB5 /* RxBlocking */; };
-		91AACF2D2E1FB88100861DB5 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2C2E1FB88100861DB5 /* RxCocoa */; };
-		91AACF2F2E1FB88100861DB5 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2E2E1FB88100861DB5 /* RxRelay */; };
 		91AACF5C2E212C3400861DB5 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 91AACF5B2E212C3400861DB5 /* Secrets.xcconfig */; };
 		91BC92B82E224AC50039E150 /* BookSearchApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 91BC92B62E224AC50039E150 /* BookSearchApp.xcdatamodeld */; };
 /* End PBXBuildFile section */
@@ -91,9 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91AACF2F2E1FB88100861DB5 /* RxRelay in Frameworks */,
-				91AACF2D2E1FB88100861DB5 /* RxCocoa in Frameworks */,
-				91AACF2B2E1FB88100861DB5 /* RxBlocking in Frameworks */,
+				9119EDB82E255B83007B8B88 /* RxSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +111,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9119EDB42E255AF0007B8B88 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		91AACEDC2E1F546C00861DB5 = {
 			isa = PBXGroup;
 			children = (
@@ -125,6 +128,7 @@
 				91AACEE72E1F546C00861DB5 /* BookSearchApp */,
 				91AACEFA2E1F546E00861DB5 /* BookSearchAppTests */,
 				91AACF042E1F546E00861DB5 /* BookSearchAppUITests */,
+				9119EDB42E255AF0007B8B88 /* Frameworks */,
 				91AACEE62E1F546C00861DB5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -162,6 +166,7 @@
 				91AACF2A2E1FB88100861DB5 /* RxBlocking */,
 				91AACF2C2E1FB88100861DB5 /* RxCocoa */,
 				91AACF2E2E1FB88100861DB5 /* RxRelay */,
+				9119EDB72E255B83007B8B88 /* RxSwift */,
 			);
 			productName = BookSearchApp;
 			productReference = 91AACEE52E1F546C00861DB5 /* BookSearchApp.app */;
@@ -676,6 +681,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9119EDAD2E252A7F007B8B88 /* XCRemoteSwiftPackageReference "RxCombine" */;
 			productName = RxCombine;
+		};
+		9119EDB72E255B83007B8B88 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91AACF292E1FB88100861DB5 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
 		};
 		91AACF2A2E1FB88100861DB5 /* RxBlocking */ = {
 			isa = XCSwiftPackageProductDependency;

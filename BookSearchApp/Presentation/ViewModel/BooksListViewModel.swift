@@ -35,6 +35,7 @@ class BooksListViewModel: ObservableObject {
     // 페이징 관련 상태
     private var currentPage = 1
     private var currentQuery = ""
+    private var lastUsedSortOption: SortOption // 추가: 마지막으로 사용된 정렬 옵션
     @Published var allLoadedBookViewModels: [BookItemViewModel] = []
     @Published var isLastPage = false
     @Published var isLoadingMore = false
@@ -53,6 +54,7 @@ class BooksListViewModel: ObservableObject {
         self.availableSortOptions = availableSortOptions
         self.viewType = viewType
         self.favoriteRepository = favoriteRepository
+        self.lastUsedSortOption = initialSortOption // 초기화
         
         // 즐겨찾기 뷰 타입일 경우, 즐겨찾기 변경 이벤트를 구독하여 UI 실시간 업데이트
         favoriteRepository.favoriteBooksChanged
@@ -71,8 +73,8 @@ class BooksListViewModel: ObservableObject {
     }
     
     func loadBooks(searchText: String, page: Int = 1, minPrice: String? = nil, maxPrice: String? = nil) {
-        // 새로운 검색이거나, 현재 쿼리가 변경되었을 때 초기화
-        if searchText != currentQuery {
+        // 새로운 검색이거나, 현재 쿼리 또는 정렬 옵션이 변경되었을 때 초기화
+        if searchText != currentQuery || currentSortOption != lastUsedSortOption { // 조건 수정
             currentQuery = searchText
             currentPage = 1
             allLoadedBookViewModels = []
@@ -123,6 +125,8 @@ class BooksListViewModel: ObservableObject {
                 }
             })
             .disposed(by: disposeBag)
+
+        lastUsedSortOption = currentSortOption // 추가: 마지막으로 사용된 정렬 옵션 업데이트
     }
     
     func applyPriceFilter() {

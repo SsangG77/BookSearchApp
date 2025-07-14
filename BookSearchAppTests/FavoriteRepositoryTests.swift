@@ -12,13 +12,20 @@ import CoreData
 
 class FavoriteRepositoryTests: XCTestCase {
     
-    var coreDataManager: CoreDataManager!
+    var coreDataManager: CoreDataManager?
     var favoriteRepository: FavoriteRepository!
     var disposeBag: DisposeBag!
     
     
     override func setUpWithError() throws {
         try super.setUpWithError()
+        
+        coreDataManager = CoreDataManager.shared
+        
+        guard let coreDataManager = coreDataManager else {
+            XCTFail("coreDataManager 인스턴스 초기화 실패")
+            return
+        }
         
         // CoreData를 인메모리 저장소로 설정
         let managedObjectModel = NSManagedObjectModel.mergedModel(from: [Bundle.main])!
@@ -47,6 +54,8 @@ class FavoriteRepositoryTests: XCTestCase {
     
 
     override func tearDownWithError() throws {
+        
+        guard let coreDataManager = coreDataManager else { return }
         // 인메모리 저장소 관리
         let context = coreDataManager.persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = FavoriteBook.fetchRequest()
@@ -61,7 +70,7 @@ class FavoriteRepositoryTests: XCTestCase {
         
         favoriteRepository = nil
         disposeBag = nil
-        coreDataManager = nil
+        self.coreDataManager = nil
         
         try super.tearDownWithError()
     } /// - override func tearDownWithError() throws
@@ -85,12 +94,17 @@ class FavoriteRepositoryTests: XCTestCase {
             status: "정상 판매",
             datetime: nil
         )
+        guard let coreDataManager = self.coreDataManager else {
+            XCTFail("CoreDataManager가 nil입니다.")
+            expectation.fulfill()
+            return
+        }
         
         favoriteRepository.saveFavoriteBook(book: testBook)
             .subscribe(onError: { error in
                 XCTFail("저장 후 로드 실패: \(error)")
             }, onCompleted: {
-                self.coreDataManager.fetchFavoriteBooks()
+                coreDataManager.fetchFavoriteBooks()
                     .subscribe(onNext: { books in
                         XCTAssertTrue(
                             books.contains(where: { $0.isbn == testBook.isbn}),

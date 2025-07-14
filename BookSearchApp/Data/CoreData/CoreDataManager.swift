@@ -20,7 +20,7 @@ class CoreDataManager {
         persistentContainer = NSPersistentContainer(name: "BookSearchApp")
         persistentContainer.loadPersistentStores { description, error in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                print("CoreData load error: \(error), \(error.userInfo)")
             }
         }
     }
