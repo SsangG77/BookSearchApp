@@ -16,7 +16,7 @@ class APISearchUseCase: BooksListUseCase {
         self.repository = repository
     }
 
-    func execute(query: String, sort: SortOption, page: Int) -> Observable<BookSearchResponse> {
+    func execute(query: String, sort: SortOption, page: Int, minPrice: String, maxPrice: String) -> Observable<BookSearchResponse> {
         return repository.fetchBooks(query: query, sort: sort.queryValue, page: page)
     }
 }

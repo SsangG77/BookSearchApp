@@ -9,15 +9,12 @@ import SwiftUI
 import RxSwift
 import RxCocoa
 
-enum ViewType {
-    case search, favorite
-}
+
 
 /// 재사용 가능한 도서 리스트뷰
 struct BooksListView: View {
     @StateObject var viewModel: BooksListViewModel
     @State private var searchText: String = ""
-    @State private var showingSortOptions = false
     
     init(viewModel: BooksListViewModel) {
         self._viewModel = StateObject(wrappedValue: viewModel)
@@ -44,8 +41,8 @@ struct BooksListView: View {
                 // 정렬 선택 뷰
                 SortOptionsSectionView(
                     viewModel: viewModel,
-                    showingSortOptions: $showingSortOptions,
-                    searchText: searchText
+                    searchText: searchText,
+                    viewType: viewModel.viewType
                 )
                 .padding(.bottom, 7)
                 

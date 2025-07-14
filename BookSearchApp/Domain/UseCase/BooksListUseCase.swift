@@ -10,5 +10,5 @@ import RxSwift
 
 // MARK: - UseCase 프로토콜
 protocol BooksListUseCase {
-    func execute(query: String, sort: SortOption, page: Int) -> Observable<BookSearchResponse>
+    func execute(query: String, sort: SortOption, page: Int, minPrice: String, maxPrice: String) -> Observable<BookSearchResponse>
 }

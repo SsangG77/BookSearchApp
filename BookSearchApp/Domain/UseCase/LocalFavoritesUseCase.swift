@@ -16,9 +16,13 @@ class LocalFavoritesUseCase: BooksListUseCase {
         self.bookRepository = bookRepository
     }
     
-    func execute(query: String, sort: SortOption, page: Int) -> Observable<BookSearchResponse> {
+    func execute(query: String, sort: SortOption, page: Int, minPrice: String, maxPrice: String) -> Observable<BookSearchResponse> {
         return bookRepository.fetchBooks(query: query, sort: sort.queryValue, page: page)
+            .do(onError: { error in
+                print("LocalFavoritesUseCase fetchBooks Error: \(error)")
+            })
             .map { response in
+                print("LocalFavoritesUseCase.execute() map - documents count: \(response.documents.count)")
                 print("LocalFavoritesUseCase.execute() map")
                 var books = response.documents
 
@@ -27,14 +31,19 @@ class LocalFavoritesUseCase: BooksListUseCase {
                     books = books.filter { $0.title.contains(query) || $0.authors.joined(separator: ", ").contains(query) }
                 }
 
+                // 금액 필터링
+                if minPrice != "" || maxPrice != "" {                
+                    books = books.filter { ($0.price ?? 0) >= Int(minPrice) ?? 0 }
+                    books = books.filter { ($0.price ?? 0) <= Int(maxPrice) ?? 0 }
+                }
+                
+
                 // 정렬
                 switch sort {
                 case .titleAsc:
                     books.sort { $0.title < $1.title }
                 case .titleDesc:
                     books.sort { $0.title > $1.title }
-                case .priceFilter: // 예시: 15000원 이상 필터링
-                    books = books.filter { ($0.price ?? 0) >= 15000 }
                 default:
                     break
                 }

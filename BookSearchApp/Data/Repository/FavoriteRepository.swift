@@ -13,4 +13,5 @@ protocol FavoriteRepository {
     func saveFavoriteBook(book: BookItemModel) -> Observable<Void>
     func deleteFavoriteBook(isbn: String) -> Observable<Void>
     func isBookFavorite(isbn: String) -> Bool
+    var favoriteBooksChanged: Observable<Void> { get }
 }

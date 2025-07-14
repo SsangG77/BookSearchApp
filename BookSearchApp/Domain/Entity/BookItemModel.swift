@@ -9,9 +9,6 @@
 import Foundation
 
 // MARK: - API 응답 모델
-// 중요: 이 모델을 디코딩하는 JSONDecoder는 반드시 다음 두 가지 전략을 설정해야 합니다.
-// 1. decoder.keyDecodingStrategy = .convertFromSnakeCase
-// 2. decoder.dateDecodingStrategy = .iso8601
 struct BookSearchResponse: Decodable, Hashable {
     let meta: Meta
     let documents: [BookItemModel]

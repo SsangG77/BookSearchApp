@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9119EDA82E25157F007B8B88 /* FavoriteBook+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */; };
+		9119EDA92E251588007B8B88 /* FavoriteBook+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */; };
+		9119EDAF2E252A7F007B8B88 /* RxCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 9119EDAE2E252A7F007B8B88 /* RxCombine */; };
 		91668F202E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1F2E22665A006FD2CA /* FavoriteBook+CoreDataProperties.swift */; };
 		91668F212E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91668F1E2E22665A006FD2CA /* FavoriteBook+CoreDataClass.swift */; };
 		91AACF2B2E1FB88100861DB5 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = 91AACF2A2E1FB88100861DB5 /* RxBlocking */; };
@@ -54,12 +57,8 @@
 		91AACF682E220C0500861DB5 /* Exceptions for "BookSearchApp" folder in "BookSearchAppTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Data/DataSource/BookDataSource.swift,
-				Data/Repository/APIBookRepository.swift,
-				Data/Repository/BookFetchRepository.swift,
-				Data/Repository/FavoriteRepositoryImpl.swift,
-				Data/Repository/LocalBookRepository.swift,
-				Domain/Entity/BookItemModel.swift,
+				Presentation/ViewState.swift,
+				Presentation/ViewType.swift,
 			);
 			target = 91AACEF62E1F546E00861DB5 /* BookSearchAppTests */;
 		};
@@ -102,6 +101,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9119EDAF2E252A7F007B8B88 /* RxCombine in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +185,7 @@
 			);
 			name = BookSearchAppTests;
 			packageProductDependencies = (
+				9119EDAE2E252A7F007B8B88 /* RxCombine */,
 			);
 			productName = BookSearchAppTests;
 			productReference = 91AACEF72E1F546E00861DB5 /* BookSearchAppTests.xctest */;
@@ -247,6 +248,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				91AACF292E1FB88100861DB5 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				9119EDAD2E252A7F007B8B88 /* XCRemoteSwiftPackageReference "RxCombine" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 91AACEE62E1F546C00861DB5 /* Products */;
@@ -300,6 +302,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9119EDA82E25157F007B8B88 /* FavoriteBook+CoreDataClass.swift in Sources */,
+				9119EDA92E251588007B8B88 /* FavoriteBook+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -531,9 +535,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sangjin.BookSearchAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BookSearchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BookSearchApp";
 			};
 			name = Debug;
@@ -550,9 +558,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sangjin.BookSearchAppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BookSearchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BookSearchApp";
 			};
 			name = Release;
@@ -567,9 +579,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sangjin.BookSearchAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_TARGET_NAME = BookSearchApp;
 			};
 			name = Debug;
@@ -584,9 +600,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sangjin.BookSearchAppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				TEST_TARGET_NAME = BookSearchApp;
 			};
 			name = Release;
@@ -633,6 +653,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		9119EDAD2E252A7F007B8B88 /* XCRemoteSwiftPackageReference "RxCombine" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CombineCommunity/RxCombine.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
 		91AACF292E1FB88100861DB5 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
@@ -644,6 +672,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9119EDAE2E252A7F007B8B88 /* RxCombine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9119EDAD2E252A7F007B8B88 /* XCRemoteSwiftPackageReference "RxCombine" */;
+			productName = RxCombine;
+		};
 		91AACF2A2E1FB88100861DB5 /* RxBlocking */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 91AACF292E1FB88100861DB5 /* XCRemoteSwiftPackageReference "RxSwift" */;

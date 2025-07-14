@@ -16,7 +16,7 @@ enum SortOption: String, CaseIterable {
     // Local
     case titleAsc = "제목 오름차순"
     case titleDesc = "제목 내림차순"
-    case priceFilter = "금액 필터 (15000원 이상)"
+//    case priceFilter = "금액 필터 (15000원 이상)"
     
     var queryValue: String {
         switch self {

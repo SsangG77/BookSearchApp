@@ -23,6 +23,7 @@ class APIService {
     private init() {}
 
     func searchBooks(query: String, sort: String, page: Int, size: Int = 20) -> Observable<BookSearchResponse> {
+        print("--------------------------------------------------------------")
         print("APIService.searchBooks() 실행됨")
         return Observable.create { observer in
             var components = URLComponents(string: self.baseURL)
@@ -32,8 +33,7 @@ class APIService {
                 URLQueryItem(name: "page", value: "\(page)"),
                 URLQueryItem(name: "size", value: "\(size)")
             ]
-            print("--------------------------------------------------------------")
-            print("쿼리값: \(String(describing: components))")
+            print("API 쿼리값: \(String(describing: components))")
             guard let url = components?.url else {
                 print("Invalid URL: \(String(describing: components?.string))")
                 observer.onError(NetworkError.invalidURL)

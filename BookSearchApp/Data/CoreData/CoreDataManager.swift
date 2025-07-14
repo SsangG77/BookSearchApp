@@ -13,7 +13,7 @@ import SwiftUI
 class CoreDataManager {
     static let shared = CoreDataManager()
     
-    let persistentContainer: NSPersistentContainer
+    var persistentContainer: NSPersistentContainer
     
     
     private init() {
@@ -37,19 +37,19 @@ class CoreDataManager {
             }
             
             let favoriteBook = FavoriteBook(context: context)
-            favoriteBook.id = book.id.uuidString
-            favoriteBook.isbn = book.isbn
-            favoriteBook.title = book.title
-            favoriteBook.authors = book.authors.joined(separator: ", ")
-            favoriteBook.publisher = book.publisher ?? ""
-            favoriteBook.thumbnail = book.thumbnail ?? ""
-            favoriteBook.price = Int32(book.price ?? 0)
-            favoriteBook.salePrice = Int32(book.salePrice ?? 0)
-            favoriteBook.status = book.status ?? ""
-            favoriteBook.datetime = book.datetime ?? Date()
-            favoriteBook.contents = book.contents ?? ""
-            favoriteBook.url = book.url ?? ""
-            favoriteBook.translators = book.translators.joined(separator: ", ")
+            favoriteBook.setValue(book.id.uuidString, forKey: "id")
+            favoriteBook.setValue(book.isbn, forKey: "isbn")
+            favoriteBook.setValue(book.title, forKey: "title")
+            favoriteBook.setValue(book.authors.joined(separator: ", "), forKey: "authors")
+            favoriteBook.setValue(book.publisher ?? "", forKey: "publisher")
+            favoriteBook.setValue(book.thumbnail ?? "", forKey: "thumbnail")
+            favoriteBook.setValue(Int32(book.price ?? 0), forKey: "price")
+            favoriteBook.setValue(Int32(book.salePrice ?? 0), forKey: "salePrice")
+            favoriteBook.setValue(book.status ?? "", forKey: "status")
+            favoriteBook.setValue(book.datetime ?? Date(), forKey: "datetime")
+            favoriteBook.setValue(book.contents ?? "", forKey: "contents")
+            favoriteBook.setValue(book.url ?? "", forKey: "url")
+            favoriteBook.setValue(book.translators.joined(separator: ", "), forKey: "translators")
             
             do {
                 try context.save()
@@ -64,33 +64,35 @@ class CoreDataManager {
     }
     
     func fetchFavoriteBooks() -> Observable<[BookItemModel]> {
+        print("CoreDataManager.fetchFavoriteBooks() 호출 시작")
         return Observable.create { observer in
             print("CoreDataManager.fetchFavoriteBooks(): Observable.create 클로저 시작")
             let context = self.persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<FavoriteBook> = FavoriteBook.fetchRequest()
+//            let fetchRequest: NSFetchRequest<FavoriteBook> = FavoriteBook.fetchRequest()
+            let fetchRequest: NSFetchRequest<FavoriteBook> = NSFetchRequest<FavoriteBook>(entityName: "FavoriteBook")
             
             do {
-                print("CoreDataManager.fetchFavoriteBooks(): do 블록 진입")
+                print("CoreDataManager.fetchFavoriteBooks(): do 블록 진입 - fetchRequest 실행 전")
                 let favoriteBooks = try context.fetch(fetchRequest)
                 print("CoreDataManager.fetchFavoriteBooks(): Core Data에서 가져온 즐겨찾기 책: \(favoriteBooks.count)개")
                 for book in favoriteBooks {
-                    print("  - \(book.title ?? "제목 없음") (ISBN: \(book.isbn ?? "없음"))")
+                    print("  - \(book.value(forKey: "title") as? String ?? "제목 없음") (ISBN: \(book.value(forKey: "isbn") as? String ?? "없음"))")
                 }
                 let bookItemModels = favoriteBooks.map { book -> BookItemModel in
                     return BookItemModel(
-                        id: UUID(uuidString: book.id ?? "") ?? UUID(),
-                        title: book.title ?? "",
-                        contents: book.contents,
-                        url: book.url,
-                        isbn: book.isbn ?? "",
-                        authors: book.authors?.components(separatedBy: ", ") ?? [],
-                        publisher: book.publisher,
-                        translators: book.translators?.components(separatedBy: ", ") ?? [],
-                        price: Int(book.price),
-                        salePrice: Int(book.salePrice),
-                        thumbnail: book.thumbnail,
-                        status: book.status,
-                        datetime: book.datetime
+                        id: UUID(uuidString: book.value(forKey: "id") as? String ?? "") ?? UUID(),
+                        title: book.value(forKey: "title") as? String ?? "",
+                        contents: book.value(forKey: "contents") as? String,
+                        url: book.value(forKey: "url") as? String,
+                        isbn: book.value(forKey: "isbn") as? String ?? "",
+                        authors: (book.value(forKey: "authors") as? String)?.components(separatedBy: ", ") ?? [],
+                        publisher: book.value(forKey: "publisher") as? String,
+                        translators: (book.value(forKey: "translators") as? String)?.components(separatedBy: ", ") ?? [],
+                        price: Int(book.value(forKey: "price") as? Int32 ?? 0),
+                        salePrice: Int(book.value(forKey: "salePrice") as? Int32 ?? 0),
+                        thumbnail: book.value(forKey: "thumbnail") as? String,
+                        status: book.value(forKey: "status") as? String,
+                        datetime: book.value(forKey: "datetime") as? Date
                     )
                 }
                 observer.onNext(bookItemModels)
@@ -107,7 +109,8 @@ class CoreDataManager {
     func deleteFavoriteBook(isbn: String) -> Observable<Void> {
         return Observable.create { observer in
             let context = self.persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<FavoriteBook> = FavoriteBook.fetchRequest()
+//            let fetchRequest: NSFetchRequest<FavoriteBook> = FavoriteBook.fetchRequest()
+            let fetchRequest: NSFetchRequest<FavoriteBook> = NSFetchRequest<FavoriteBook>(entityName: "FavoriteBook")
             fetchRequest.predicate = NSPredicate(format: "isbn == %@", isbn)
             
             do {
@@ -132,7 +135,8 @@ class CoreDataManager {
     
     func isBookFavorite(isbn: String) -> Bool {
         let context = self.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<FavoriteBook> = FavoriteBook.fetchRequest()
+//        let fetchRequest: NSFetchRequest<FavoriteBook> = FavoriteBook.fetchRequest()
+        let fetchRequest: NSFetchRequest<FavoriteBook> = NSFetchRequest<FavoriteBook>(entityName: "FavoriteBook")
         fetchRequest.predicate = NSPredicate(format: "isbn == %@", isbn)
         fetchRequest.fetchLimit = 1
         do {

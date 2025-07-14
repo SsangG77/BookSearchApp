@@ -15,6 +15,11 @@ class BooksListViewModel: ObservableObject {
     @Published var state: ViewState = .idle
     @Published var currentSortOption: SortOption
     
+    // 금액 필터
+    @Published var minPriceFilter: String = ""
+    @Published var maxPriceFilter: String = ""
+    
+    
     private let useCase: BooksListUseCase
     let availableSortOptions: [SortOption]
     var viewType: ViewType
@@ -48,9 +53,24 @@ class BooksListViewModel: ObservableObject {
         self.availableSortOptions = availableSortOptions
         self.viewType = viewType
         self.favoriteRepository = favoriteRepository
+        
+        // 즐겨찾기 뷰 타입일 경우, 즐겨찾기 변경 이벤트를 구독하여 UI 실시간 업데이트
+        favoriteRepository.favoriteBooksChanged
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                if self.viewType == .favorite {
+                    print("Favorite books changed, reloading favorites.")
+                    // 즐겨찾기 목록을 새로고침하기 전에 기존 데이터를 초기화
+                    self.allLoadedBookViewModels = []
+                    self.currentPage = 1
+                    self.isLastPage = false
+                    self.loadBooks(searchText: "") // 즐겨찾기 목록 새로고침
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
-    func loadBooks(searchText: String, page: Int = 1) {
+    func loadBooks(searchText: String, page: Int = 1, minPrice: String? = nil, maxPrice: String? = nil) {
         // 새로운 검색이거나, 현재 쿼리가 변경되었을 때 초기화
         if searchText != currentQuery {
             currentQuery = searchText
@@ -69,7 +89,7 @@ class BooksListViewModel: ObservableObject {
         isLoadingMore = true
         
         print("BooksListViewModel: useCase.execute()")
-        useCase.execute(query: currentQuery, sort: currentSortOption, page: currentPage)
+        useCase.execute(query: currentQuery, sort: currentSortOption, page: currentPage, minPrice: minPriceFilter, maxPrice: maxPriceFilter)
             .subscribe(onNext: { [weak self] response in
                 DispatchQueue.main.async {
                     guard let self = self else { return }
@@ -84,6 +104,7 @@ class BooksListViewModel: ObservableObject {
                         )
                     }
                     self.allLoadedBookViewModels.append(contentsOf: newViewModels)
+                    print("BooksListViewModel: allLoadedBookViewModels count after append: \(self.allLoadedBookViewModels.count)")
                     
                     self.isLastPage = response.meta.isEnd
                     self.isLoadingMore = false
@@ -97,16 +118,25 @@ class BooksListViewModel: ObservableObject {
             }, onError: { [weak self] error in
                 DispatchQueue.main.async {
                     self?.isLoadingMore = false
-                    self?.state = .error("네트워크 에러입니다.")
+                    self?.state = .error("데이터 로드 중 에러 발생: \(error.localizedDescription)")
+                    print("BooksListViewModel loadBooks Error: \(error)")
                 }
             })
             .disposed(by: disposeBag)
     }
     
+    func applyPriceFilter() {
+        // 필터 적용 시 즐겨찾기 목록 새로고침
+        allLoadedBookViewModels = []
+        currentPage = 1
+        isLastPage = false
+        loadBooks(searchText: currentQuery, minPrice: minPriceFilter, maxPrice: maxPriceFilter)
+    }
+    
     func loadNextPage() {
         guard !isLoadingMore && !isLastPage else { return }
         currentPage += 1
-        loadBooks(searchText: currentQuery, page: currentPage)
+        loadBooks(searchText: currentQuery, page: currentPage, minPrice: minPriceFilter, maxPrice: maxPriceFilter)
     }
     
     func deleteFromFavorites(isbn: String) {
@@ -114,6 +144,5 @@ class BooksListViewModel: ObservableObject {
             allLoadedBookViewModels.removeAll { $0.book.isbn == isbn }
         }
     }
-    
     
 }

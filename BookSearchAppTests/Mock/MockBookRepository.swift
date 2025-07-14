@@ -2,16 +2,16 @@
 //  MockBookRepository.swift
 //  BookSearchAppTests
 //
-//  Created by 차상진 on 7/12/25.
+//  Created by chasangjin on 7/14/25.
 //
 
 import Foundation
 import RxSwift
+@testable import BookSearchApp
 
-// Mock 데이터를 사용하는 리포지토리
-class MockBookRepository: BookRepository {
-    private let dataSource: BookDataSource
-
+class MockBookRepository: BookFetchRepository {
+    let dataSource: BookDataSource
+    
     init(dataSource: BookDataSource) {
         self.dataSource = dataSource
     }

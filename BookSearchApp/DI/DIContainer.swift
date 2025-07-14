@@ -10,7 +10,11 @@ import Foundation
 class DIContainer {
     static let shared = DIContainer()
 
-    private init() {}
+    private let _favoriteRepository: FavoriteRepository
+
+    private init() {
+        _favoriteRepository = FavoriteRepositoryImpl(coreDataManager: CoreDataManager.shared)
+    }
     
     // MARK: - Services
     private func makeAPIService() -> APIService {
@@ -32,7 +36,7 @@ class DIContainer {
     }
     
     func makeFavoriteRepository() -> FavoriteRepository {
-        return FavoriteRepositoryImpl(coreDataManager: CoreDataManager.shared)
+        return _favoriteRepository
     }
 
     // MARK: - Use Cases
@@ -57,7 +61,7 @@ class DIContainer {
     }
 
     func makeFavoritesBooksListViewModel() -> BooksListViewModel {
-        let availableSortOptions: [SortOption] = [.titleAsc, .titleDesc, .priceFilter]
+        let availableSortOptions: [SortOption] = [.titleAsc, .titleDesc]
         return BooksListViewModel(
             useCase: makeFavoritesUseCase(),
             initialSortOption: .titleAsc,

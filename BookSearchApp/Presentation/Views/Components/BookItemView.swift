@@ -35,15 +35,6 @@ struct BookItemView: View {
                     date: viewModel.publishedDateText,
                     status: viewModel.status
                 )
-                
-                // 원가, 할인가, 할인율 표시
-//                priceView(
-//                    originalPrice: viewModel.originalPrice,
-//                    salePrice: viewModel.salePrice,
-//                    discountPercentage: viewModel.discountPercentage,
-//                    isDiscounted: viewModel.isDiscounted
-//                )
-                
                 HStack {
                     Spacer()
                     
@@ -166,53 +157,6 @@ struct BookItemView: View {
         .frame(maxHeight: .infinity)
     } /// - func bookContents( bookTitle: , bookAuthors: , publisher: , date: , status: ) -> some View
     
-
-    
-    /// 즐겨찾기 유무, 도서 판매 상태, 가격 정보 표시
-    /// - Parameters:
-    ///   - originalPrice: 원가격
-    ///   - salePrice: 할인 가격
-    ///   - discountPercentage: 할일율
-    ///   - isDiscounted: 할인 유무
-    ///   - status: 판매 상태
-    /// - Returns: some View
-//    func priceView(
-//        originalPrice: Int,
-//        salePrice: Int,
-//        discountPercentage: String,
-//        isDiscounted: Bool
-//    ) -> some View {
-//        
-//        HStack {
-//            Spacer()
-//            VStack(alignment: .trailing, spacing: 7) {// 오른쪽 정렬
-//                // 책 가격 표시
-//                if !isDiscounted {
-//                    // 할인된 가격이 없
-//                    Text("\(originalPrice) ₩")
-//                        .jalnanFont(size: 16, color: .black, weight: .bold)
-//                    
-//                } else  if salePrice <= 0 || originalPrice <= 0 {
-//                    Text("가격 정보 없음")
-//                        .jalnanFont(size: 16, color: .black, weight: .bold)
-//                } else {
-//                    // 할인된 가격이 있을 경우
-//                    Text("\(originalPrice) ₩ ")
-//                        .jalnanFont(size: 12, color: .gray)
-//                        .strikethrough() // 취소선
-//                    
-//                    HStack(alignment: .bottom) {
-//                        Text("\(discountPercentage)%") // 할인율 표시
-//                            .jalnanFont(size: 12, color: .red, weight: .bold)
-//                        
-//                        Text("\(salePrice) ₩")
-//                            .jalnanFont(size: 18, color: .black, weight: .bold)
-//                    } /// - HStack
-//                } /// - if else
-//            } /// - VStack
-//            .frame(maxHeight: .infinity)
-//        } /// - HStack
-//    } /// - func priceView(originalPrice: ,salePrice: ,discountPercentage: ,isDiscounted: ) -> some View
 } /// - struct BookItemView: View
 
 
