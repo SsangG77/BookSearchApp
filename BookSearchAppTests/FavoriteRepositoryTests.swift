@@ -19,23 +19,21 @@ class FavoriteRepositoryTests: XCTestCase {
     
     override func setUpWithError() throws {
         try super.setUpWithError()
-        
-        coreDataManager = CoreDataManager.shared
-        
-        guard let coreDataManager = coreDataManager else {
-            XCTFail("coreDataManager 인스턴스 초기화 실패")
-            return
-        }
-        
+
         // CoreData를 인메모리 저장소로 설정
-        let managedObjectModel = NSManagedObjectModel.mergedModel(from: [Bundle.main])!
+        guard let modelURL = Bundle(identifier: "com.sangjin.BookSearchApp")?.url(forResource: "BookSearchApp", withExtension: "momd"),
+              let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL) else {
+            XCTFail("Failed to load managed object model from main app bundle.")
+            return
+        } // 메인 번들에서 모델 로드
         let persistentStoreDescription = NSPersistentStoreDescription()
         persistentStoreDescription.type = NSInMemoryStoreType // 인메모리 저장소 사용
-        persistentStoreDescription.shouldMigrateStoreAutomatically = false // 비동기 로딩 비활성화
-        
+        persistentStoreDescription.shouldMigrateStoreAutomatically = true // 자동 마이그레이션 활성화
+        persistentStoreDescription.shouldInferMappingModelAutomatically = true // 자동 매핑 모델 추론 활성화
+
         let persistentContainer = NSPersistentContainer(name: "BookSearchApp", managedObjectModel: managedObjectModel)
         persistentContainer.persistentStoreDescriptions = [persistentStoreDescription]
-        
+
         let expectation = XCTestExpectation(description: "CoreData 로드됨")
         persistentContainer.loadPersistentStores { (description, error) in
             if let error = error {
@@ -44,38 +42,38 @@ class FavoriteRepositoryTests: XCTestCase {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 1.0) // 1초동안 대기
-        
-        // 컨테이너를 persistentContainer에 할당하기
-        coreDataManager.persistentContainer = persistentContainer
-        
+
+        // 테스트 전용 CoreDataManager 인스턴스 생성
+        coreDataManager = CoreDataManager(container: persistentContainer)
+
+        guard let coreDataManager = coreDataManager else {
+            XCTFail("coreDataManager 인스턴스 초기화 실패")
+            return
+        }
+
         favoriteRepository = FavoriteRepositoryImpl(coreDataManager: coreDataManager)
         disposeBag = DisposeBag()
-    } /// - override func setUpWithError() throws
+    }
     
 
     override func tearDownWithError() throws {
         
         guard let coreDataManager = coreDataManager else { return }
-        // 인메모리 저장소 관리
         let context = coreDataManager.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = FavoriteBook.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
-        do {
-            try context.execute(deleteRequest)
-            try context.save()
-        } catch {
-            XCTFail("인메모리 저장소 정리 실패: \(error)")
-        }
+
+        // 인메모리 저장소 정리: NSBatchDeleteRequest 대신 컨텍스트 리셋
+        context.rollback() // 보류 중인 변경 사항 롤백
+        context.reset() // 컨텍스트의 모든 객체 지우기
         
         favoriteRepository = nil
         disposeBag = nil
         self.coreDataManager = nil
         
         try super.tearDownWithError()
-    } /// - override func tearDownWithError() throws
+    }
    
     
+    // 즐겨찾기 저장 테스트
     func testSaveFavoriteBook() {
         let expectation = XCTestExpectation(description: "즐겨찾기 책 저장 테스트")
         
@@ -101,24 +99,20 @@ class FavoriteRepositoryTests: XCTestCase {
         }
         
         favoriteRepository.saveFavoriteBook(book: testBook)
-            .subscribe(onError: { error in
-                XCTFail("저장 후 로드 실패: \(error)")
-            }, onCompleted: {
-                coreDataManager.fetchFavoriteBooks()
-                    .subscribe(onNext: { books in
-                        XCTAssertTrue(
-                            books.contains(where: { $0.isbn == testBook.isbn}),
-                            "저장 후 책이 즐겨찾기에 있는지 확인"
-                        )
-                        expectation.fulfill()
-                    })
-                    .disposed(by: self.disposeBag)
+            .flatMap { _ in
+                return coreDataManager.fetchFavoriteBooks()
+            }
+            .subscribe(onNext: { books in
+                XCTAssertTrue(
+                    books.contains(where: { $0.isbn == testBook.isbn}),
+                    "저장 후 책이 즐겨찾기에 있는지 확인"
+                )
+                expectation.fulfill()
+            }, onError: { error in
+                XCTFail("저장 또는 로드 실패: \(error)")
             })
             .disposed(by: self.disposeBag)
         
         wait(for: [expectation], timeout: 5.0)
     }
-    
-    
-    
 }

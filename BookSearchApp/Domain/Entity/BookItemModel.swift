@@ -8,34 +8,21 @@
 
 import Foundation
 
-// MARK: - API 응답 모델
-struct BookSearchResponse: Decodable, Hashable {
-    let meta: Meta
-    let documents: [BookItemModel]
-}
-
-//MARK: - Meta 데이터
-struct Meta: Decodable, Hashable {
-    let isEnd: Bool
-    let pageableCount: Int
-    let totalCount: Int
-}
-
 // MARK: - 책 아이템 모델
 struct BookItemModel: Identifiable, Codable, Hashable {
     var id = UUID()
-    let title: String
-    let contents: String?
-    let url: String?
-    let isbn: String
-    let authors: [String]
-    let publisher: String?
-    let translators: [String]
-    let price: Int?
-    let salePrice: Int?
-    let thumbnail: String?
-    let status: String?
-    let datetime: Date?
+    let title: String         // 책 제목
+    let contents: String?     // 책 소개글
+    let url: String?          // 웹 검색 url
+    let isbn: String          // 도서 ISBN
+    let authors: [String]     // 작가 배열
+    let publisher: String?    // 출판사
+    let translators: [String] // 번역가
+    let price: Int?           // 원 가격
+    let salePrice: Int?       // 할인 가격
+    let thumbnail: String?    // 표지 이미지 url
+    let status: String?       // 도서 상태
+    let datetime: Date?       // 출판일
 
     // API 응답 키와 모델 속성 이름이 다르면 변환
     enum CodingKeys: String, CodingKey {

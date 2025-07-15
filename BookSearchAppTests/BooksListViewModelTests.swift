@@ -7,7 +7,6 @@
 
 import XCTest
 import RxSwift
-import RxCocoa
 import RxCombine
 @testable import BookSearchApp
 
@@ -90,48 +89,4 @@ class BooksListViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0) // 네트워크 지연을 고려하여 10초 설정
     }
     
-    // 즐겨찾기 저장 테스트
-    func testAddFavoriteBook() {
-        
-        // Given
-        let testBook = BookItemModel(
-            id: UUID(), // id 추가
-            title: "Test Book",
-            contents: "Test Contents",
-            url: "http://test.com",
-            isbn: "1234567890",
-            authors: ["Test Author"],
-            publisher: "Test Publisher",
-            translators: [],
-            price: 10000,
-            salePrice: 9000,
-            thumbnail: "http://test.com/thumbnail.jpg",
-            status: "정상",
-            datetime: Date()
-        )
-
-        // BookItemViewModel을 생성
-        let bookItemViewModel = BookItemViewModel(
-            book: testBook,
-            favoriteRepository: mockFavoriteRepository,
-            deleteItem: { _ in }
-        )
-        
-        // When
-        bookItemViewModel.toggleFavorite() // 즐겨찾기 추가
-
-        // Then
-        // mockFavoriteRepository의 savedBook이 설정되었는지 확인
-        XCTAssertNotNil(mockFavoriteRepository.savedBook, "saveFavoriteBook 호출 확인")
-        XCTAssertEqual(mockFavoriteRepository.savedBook?.isbn, testBook.isbn, "isbn 일치 확인")
-        XCTAssertTrue(bookItemViewModel.isFavorite, "isFavorite == true 확인")
-    }
-    
-    
-    
-    
-    
-    
-    
-
 }

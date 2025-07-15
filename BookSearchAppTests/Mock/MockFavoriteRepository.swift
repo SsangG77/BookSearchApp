@@ -10,6 +10,8 @@ import RxSwift
 @testable import BookSearchApp
 
 class MockFavoriteRepository: FavoriteRepository {
+    
+    
     var savedBook: BookItemModel? = nil
     var deletedIsbn: String? = nil
     var isFavoriteResult: Bool = false // 이 값을 사용하도록 수정
@@ -39,7 +41,7 @@ class MockFavoriteRepository: FavoriteRepository {
         return isFavoriteResult // isFavoriteResult 값을 반환하도록 수정
     }
     
-//    func fetchFavoriteBooks() -> Single<[BookItemModel]> {
-//        return .just(favoriteBooks)
-//    }
+    func hasFavoriteBooks() -> Bool {
+        return favoriteBooks.isEmpty ? false : true
+    }
 }

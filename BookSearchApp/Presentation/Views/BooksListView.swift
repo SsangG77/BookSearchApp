@@ -33,6 +33,7 @@ struct BooksListView: View {
                 // 검색필드 뷰
                 CustomSearchBarView(
                     searchText: $searchText,
+                    viewType: $viewModel.viewType,
                     onSearch: { query in
                         viewModel.loadBooks(searchText: query)
                     }
@@ -51,10 +52,12 @@ struct BooksListView: View {
             }
             .background(Color.mainColor) // 배경색 적용
             .frame(maxWidth: .infinity, maxHeight: .infinity) // 전체 공간 채우기
+            .animation(.easeInOut(duration: 0.5), value: viewModel.state) // 뷰모델 상태 변화에 애니메이션 적용
             .onAppear {
-                // 즐겨찾기 뷰일 경우 바로 로드
+                // 즐겨찾기 뷰일 경우
                 if viewModel.viewType == .favorite {
-                    viewModel.loadBooks(searchText: "")
+                    // 즐겨찾기된 도서가 있는지 먼저 확인
+                        viewModel.loadBooks(searchText: "")
                 }
             }
         } /// - NavigationView
@@ -76,9 +79,17 @@ struct BooksListView: View {
             
         // 로딩 상태
         case .loading:
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.mainColor) // 배경색 적용
+            ScrollView {
+                VStack(spacing: 10) {
+                    ForEach(0..<5) { _ in
+                        BookItemLoadingSkeleton()
+                            .frame(width: UIScreen.main.bounds.width * 0.85)
+                            .padding(.trailing, 20)
+                    }
+                }
+                .padding(.horizontal, 5)
+            }
+            .background(Color.mainColor) // 배경색 적용
             
         // 로딩 완료 상테
         case .loaded:
@@ -103,6 +114,7 @@ struct BooksListView: View {
                             viewModel.loadNextPage()
                         }
                     }
+                    
                 } /// - ForEach
                 
                 if viewModel.isLoadingMore {
@@ -117,16 +129,30 @@ struct BooksListView: View {
             .listStyle(.plain)
             .background(Color.mainColor)
         
-        // ❌ 에러 발생
+        // 에러 발생
         case .error(let message):
-            Text(message)
-                .jalnanFont(size: 18)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.mainColor) // 배경색 적용
+            VStack(spacing: 20) {
+                Text(message)
+                    .jalnanFont(size: 18)
+                
+                Button(action: {
+                    // 리로드 버튼 탭 시 데이터 다시 로드
+                    viewModel.loadBooks(searchText: searchText)
+                }) {
+                    Text("다시 시도")
+                        .jalnanFont(size: 16, color: .white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(Color.accentColor)
+                        .cornerRadius(10)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.mainColor) // 배경색 적용
         
         // 데이터가 없을 때
         case .empty:
-            Text("도서가 없어요😢")
+            Text(viewModel.viewType == .search ? "검색결과가 없어요😢" : "♥ 눌러 즐겨찾기 추가하기")
                 .jalnanFont(size: 17)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.mainColor) // 배경색 적용

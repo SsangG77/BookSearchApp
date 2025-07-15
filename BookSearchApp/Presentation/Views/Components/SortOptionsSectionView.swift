@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+//MARK: - 정렬 옵셕 선택 뷰
 struct SortOptionsSectionView: View {
     @ObservedObject var viewModel: BooksListViewModel
     
@@ -14,70 +15,70 @@ struct SortOptionsSectionView: View {
     @State private var showingSortOptions: Bool = false
     @State private var showingPriceFilter: Bool = false
     
-    
     let searchText: String
     let viewType: ViewType
 
     //  body
     var body: some View {
         VStack(spacing: 8) {
-            sortHeaderSection // Spacer() + 정렬 버튼
+            sortHeaderSection // Spacer + 정렬 버튼
 
-            if showingSortOptions { // 정렬 종류 리스트 나타남
+            if showingSortOptions { // 정렬 종류 리스트 보여주기
                 sortDropdownSection // 정렬 종류 리스트
             }
-            if showingPriceFilter { // 금액 필터 뷰 나타남
+            if showingPriceFilter { // 금액 필터 뷰 보여주기
                 priceFilterSection // 금액 필터 뷰
             }
         }
         .animation(.easeInOut(duration: 0.2), value: showingSortOptions || showingPriceFilter)
     }
 
-    // Spacer() + 정렬 버튼
+    //MARK: - Spacer + 정렬 버튼
     private var sortHeaderSection: some View {
         HStack {
             Spacer()
             
-            if viewType == .favorite {
-                priceSelectButton
+            if viewType == .favorite { // 즐겨찾기 뷰에서는 가격 필터 버튼 보여주기
+                priceSelectButton // 가격 필터 버튼
             }
-            sortButton
+            sortButton // 정렬 선택 버튼
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
     }
 
-    // 정렬 버튼
+    //MARK: - 정렬 버튼 리스트
     private var sortButton: some View {
         Button {
             withAnimation {
                 showingSortOptions.toggle()
-                if showingSortOptions { // 정렬 옵션이 열릴 때만 금액 필터 닫기
+                if showingSortOptions { // 정렬 옵션이 열릴 때 금액 필터 닫기
                     showingPriceFilter = false
                 }
             }
         } label: {
             HStack(spacing: 4) {
-                Text(viewModel.currentSortOption.displayName) // 선택된 정렬 표시
+                Text(viewModel.currentSortOption.displayName) // 선택된 정렬 이름 표시
                     .jalnanFont(size: 14)
                     .foregroundColor(.white)
 
                 Image(systemName: showingSortOptions ? "chevron.up" : "chevron.down") // 정렬 리스트 화살표
                     .font(.system(size: 12))
                     .foregroundColor(.white)
-            } /// - HStack
+            }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(Color.white.opacity(0.2))
             .cornerRadius(8)
-        } /// - label
-    } /// - var sortButton: some View
+        }
+    }
     
+    //MARK: - 금액 선택 버튼
     private var priceSelectButton: some View {
         Button {
             withAnimation {
                 showingPriceFilter.toggle()
-                if showingPriceFilter { // 금액 필터가 열릴 때만 정렬 옵션 닫기
+                if showingPriceFilter { // 금액 필터가 열릴 때 정렬 옵션 리스트 닫기
                     showingSortOptions = false
                 }
             }
@@ -91,15 +92,15 @@ struct SortOptionsSectionView: View {
                 Image(systemName: showingSortOptions ? "chevron.up" : "chevron.down") // 정렬 리스트 화살표
                     .font(.system(size: 12))
                     .foregroundColor(.white)
-            } /// - HStack
+            }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(Color.white.opacity(0.2))
             .cornerRadius(8)
-        } /// - label
+        }
     }
 
-    // 정렬 종류 리스트
+    //MARK: - 정렬 종류 리스트
     private var sortDropdownSection: some View {
         VStack(spacing: 4) {
             //정렬 종류 리스트, 뷰에 따라 다름
@@ -133,7 +134,7 @@ struct SortOptionsSectionView: View {
         .padding(.bottom, 8)
     } /// - var sortDropdownSection: some View
 
-    // 금액 필터 뷰
+    //MARK: - 금액 필터 입력 뷰
     private var priceFilterSection: some View {
         VStack(spacing: 4) {
             HStack {
@@ -168,12 +169,12 @@ struct SortOptionsSectionView: View {
                     HStack {
                         Text("적용")
                             .jalnanFont(size: 14)
-                    } // HStack
+                    }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(Color.white.opacity(0.1))
                     .cornerRadius(6)
-                } /// - label
+                }
                 
                 
             }
@@ -181,4 +182,4 @@ struct SortOptionsSectionView: View {
             .padding(.bottom, 8)
         }
     }
-} /// - struct SortOptionsSectionView: View
+}

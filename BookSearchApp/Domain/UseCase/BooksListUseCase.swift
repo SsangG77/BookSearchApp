@@ -8,7 +8,7 @@
 import Foundation
 import RxSwift
 
-// MARK: - UseCase 프로토콜
+// MARK: - 도서 목록 조회 UseCase 프로토콜
 protocol BooksListUseCase {
     func execute(query: String, sort: SortOption, page: Int, minPrice: String, maxPrice: String) -> Observable<BookSearchResponse>
 }

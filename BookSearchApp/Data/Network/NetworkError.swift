@@ -7,6 +7,7 @@
 
 import Foundation
 
+//MARK: - API 에러 별 유형
 enum NetworkError: Error {
     case invalidURL
     case requestFailed(Error)

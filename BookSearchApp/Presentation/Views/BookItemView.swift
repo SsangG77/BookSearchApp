@@ -9,14 +9,11 @@ import SwiftUI
 
 struct BookItemView: View {
     @StateObject var viewModel: BookItemViewModel
-//    var deleteItem: (_ isbn: String) -> Void
     
     init(
-        viewModel: BookItemViewModel,
-//        deleteItem: @escaping (_ isbn: String) -> Void
+        viewModel: BookItemViewModel
     ) {
         self._viewModel = StateObject(wrappedValue: viewModel)
-//        self.deleteItem = deleteItem
     }
 
     var body: some View {
@@ -32,12 +29,13 @@ struct BookItemView: View {
                     bookTitle: viewModel.title,
                     bookAuthors: viewModel.authorsText,
                     publisher: viewModel.publisher,
-                    date: viewModel.publishedDateText,
                     status: viewModel.status
                 )
+                
                 HStack {
                     Spacer()
                     
+                    // 가격 정보 표시
                     PriceView(
                         originalPrice: viewModel.originalPrice,
                         salePrice: viewModel.salePrice,
@@ -47,18 +45,18 @@ struct BookItemView: View {
                         originalPriceSize: 12
                     )
                 }
-            } // VStack
+            }
             .padding(7)
-        } // HStack
+        }
         .padding(5)
         .background(.white)
         .cornerRadius(12)
         .frame(height: 190)
         .listRowBackground(Color.clear) // 리스트 행의 배경을 투명하게 설정
-    } // ar body: some View
+    }
     
     
-    /// 책 표지 이미지
+    //MARK: - 책 표지 이미지
     /// - Parameter coverImageUrl: 이미지 표지 url
     /// - Returns: View: 이미지뷰 반환
     func bookImage(coverImageUrl: URL?) -> some View {
@@ -84,28 +82,26 @@ struct BookItemView: View {
                 // 로딩 중
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } /// - if else
-        } /// - AsyncImage
-        .frame(width: 110, height: 180) // 높이를 명시적인 값으로 변경
+            }
+        }
+        .frame(width: 110, height: 180)
         .background(.gray.opacity(0.2))
         .cornerRadius(8)
         .clipped()
-    } /// - func bookImage(coverImageUrl: URL?) -> some View
+    }
     
     
-    /// 책 정보 (제목, 작가, 출판사, 날짜 표시)
+    //MARK: - 책 정보 (제목, 작가, 출판사, 날짜 표시)
     /// - Parameters:
     ///   - bookTitle: 책 제목
     ///   - bookAuthors: 작가 문자열 배열
     ///   - publisher: 출판사
-    ///   - date: 출판 날짜
     ///   - status: 도서 상태
     /// - Returns: some View
     func bookContents(
         bookTitle: String,
         bookAuthors: String,
         publisher: String,
-        date: String,
         status: String
     ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -121,20 +117,15 @@ struct BookItemView: View {
                     action: {
                         print("BookItemView: 즐겨찾기 버튼 탭됨")
                         viewModel.toggleFavorite() // 즐겨찾기 로직
-//                        if !viewModel.isFavorite {
-//                            viewModel.deleteItem(viewModel.isbn)
-//                        }
-                    })
-                
-                
-            } /// - HStack
+                    }
+                )
+            }
             
             Text(bookTitle)
                 .jalnanFont(size: 16, color: .black)
                 .lineLimit(2) // 제목 최대 2줄까지 표시
             
             CustimLabelView(title: bookAuthors, fontSize: 11, iconName: "person.fill")
-            
             
             HStack {
                 CustimLabelView(title: publisher, fontSize: 10, fontColor: .gray, iconName: "building.2.fill")
@@ -151,13 +142,14 @@ struct BookItemView: View {
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(Color.black, lineWidth: 1)
                         )
-                } /// - if
-            } /// - HStack
+                }
+            }
         }
         .frame(maxHeight: .infinity)
-    } /// - func bookContents( bookTitle: , bookAuthors: , publisher: , date: , status: ) -> some View
+    }
     
-} /// - struct BookItemView: View
+}
+
 
 
 
@@ -191,10 +183,11 @@ struct BookItemView: View {
             Color.gray.opacity(0.2)
                 .ignoresSafeArea()
             
-            BookItemView(viewModel: bookItemViewModel)
+            VStack(spacing: 20) {
+                BookItemView(viewModel: bookItemViewModel)
+                BookItemLoadingSkeleton()
+            }
         }
-        
-        Spacer()
     }
 }
 
