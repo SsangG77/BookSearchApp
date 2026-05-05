@@ -12,12 +12,12 @@ struct FavoriteButton: View {
     
     var isFavorite: Bool // 이미지 표시를 위한 즐겨찾기 유무 변수
     var action: () -> Void // 버튼 클릭시 실행할 클로저
+    let impactMed = UIImpactFeedbackGenerator(style: .medium)
     
     var body: some View {
         // 즐겨찾기 아이콘
         Button(action: {
             // 햅틱 피드백 추가
-            let impactMed = UIImpactFeedbackGenerator(style: .medium)
             impactMed.impactOccurred()
             action()
         }) {
